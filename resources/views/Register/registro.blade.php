@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - SmartGarden</title>
+    <title>Registro - GrowWise</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -221,7 +221,7 @@
     </div>
     <div class="register-header">
         <h2>Crear cuenta</h2>
-        <p>Únete a la familia SmartGarden y comienza a cultivar</p>
+        <p>Únete a la familia GrowWise y comienza a cultivar</p>
     </div>
 
     {{-- Mostrar errores de validación --}}
@@ -258,6 +258,18 @@
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="correo@ejemplo.com" required autocomplete="email">
                 @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <!-- Agrega esto después del campo email -->
+            <div class="col-12 mb-3">
+                <label for="role" class="form-label">Tipo de cuenta</label>
+                <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" required>
+                    <option value="cliente">Cliente - Comprar productos</option>
+                    <option value="vendedor">Vendedor - Vender mis cultivos</option>
+                </select>
+                @error('role')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>

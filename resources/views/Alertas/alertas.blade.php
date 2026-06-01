@@ -1,10 +1,9 @@
-{{-- resources/views/Alertas/alertas.blade.php --}}
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alertas - SmartGarden</title>
+    <title>Alertas - GrowWise</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -42,13 +41,11 @@
             overflow-x: hidden;
         }
 
-        /* Dashboard layout */
         .dashboard {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 280px;
             background: white;
@@ -118,14 +115,12 @@
             color: var(--verde-hoja);
         }
 
-        /* Main content */
         .main-content {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
         }
 
-        /* Header */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -229,7 +224,6 @@
             font-weight: 600;
         }
 
-        /* Mensajes de alerta */
         .alert {
             border-radius: 50px;
             padding: 15px 25px;
@@ -249,7 +243,6 @@
             border: 1px solid rgba(220,53,69,0.2);
         }
 
-        /* Botones */
         .btn-naranja {
             background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
             color: white;
@@ -289,7 +282,6 @@
             box-shadow: 0 5px 15px rgba(46,125,50,0.3);
         }
 
-        /* Tarjetas de resumen */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -349,7 +341,6 @@
             transform: rotate(5deg) scale(1.1);
         }
 
-        /* Filtros */
         .filtros-card {
             background: white;
             border-radius: 20px;
@@ -398,7 +389,6 @@
             box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
         }
 
-        /* Tabla de alertas */
         .table-container {
             background: white;
             border-radius: 20px;
@@ -452,10 +442,6 @@
         td {
             padding: 15px 10px;
             border-bottom: 1px solid #f0f0f0;
-            transition: var(--transicion);
-        }
-
-        tr {
             transition: var(--transicion);
         }
 
@@ -536,7 +522,6 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        /* Estado vacío */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -562,7 +547,6 @@
             margin-bottom: 20px;
         }
 
-        /* Responsive */
         @media (max-width: 992px) {
             .dashboard {
                 flex-direction: column;
@@ -591,7 +575,7 @@
     <!-- Sidebar -->
     <div class="sidebar" data-aos="fade-right" data-aos-duration="1000">
         <div class="sidebar-header">
-            <h3><i class="fas fa-seedling"></i> SmartGarden</h3>
+            <h3><i class="fas fa-seedling"></i> GrowWise</h3>
             <p>Gestión Inteligente</p>
         </div>
         <div class="sidebar-menu">
@@ -609,9 +593,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Header -->
         <div class="dashboard-header" data-aos="fade-down" data-aos-duration="1000">
             <div class="header-title">
                 <h1>Alertas y Notificaciones</h1>
@@ -624,8 +606,6 @@
                         <span>{{ $stats['pendientes'] }}</span>
                     @endif
                 </a>
-
-                <!-- Dropdown de usuario -->
                 <div class="dropdown">
                     <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{{ auth()->user()->avatar }}" alt="Profile">
@@ -634,35 +614,20 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="{{ route('configuracion.index') }}"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                     </ul>
                 </div>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
             </div>
         </div>
 
-        <!-- Mensajes de sesión -->
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            <div class="alert alert-success">{{ session('success') }}</div>
         @endif
-
         @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card" data-aos="fade-up" data-aos-delay="50">
                 <div class="stat-info">
@@ -670,9 +635,7 @@
                     <p>Pendientes</p>
                     <small>Requieren atención</small>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
             </div>
             <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-info">
@@ -680,9 +643,7 @@
                     <p>Resueltas (hoy)</p>
                     <small>Últimas 24h</small>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
             </div>
             <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
                 <div class="stat-info">
@@ -690,9 +651,7 @@
                     <p>Críticas</p>
                     <small>Alta prioridad</small>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-bell"></i></div>
             </div>
             <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="stat-info">
@@ -700,13 +659,10 @@
                     <p>Total (mes)</p>
                     <small>Histórico</small>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-history"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-history"></i></div>
             </div>
         </div>
 
-        <!-- Filtros -->
         <div class="filtros-card" data-aos="fade-up" data-aos-delay="100">
             <div class="filtros-grid">
                 <div class="filtros-group">
@@ -723,12 +679,6 @@
                         <option value="Media">Medias</option>
                         <option value="Baja">Bajas</option>
                     </select>
-                    <select class="filtro-select" id="moduloFilter" onchange="filtrarAlertas()">
-                        <option value="">Todos los módulos</option>
-                        @foreach($modulos ?? [] as $modulo)
-                            <option value="{{ $modulo->id }}">{{ $modulo->nombre }}</option>
-                        @endforeach
-                    </select>
                 </div>
                 <button class="btn-naranja" onclick="filtrarAlertas()">
                     <i class="fas fa-filter"></i> Filtrar
@@ -736,27 +686,23 @@
             </div>
         </div>
 
-        <!-- Tabla de alertas -->
         <div class="table-container" data-aos="fade-up" data-aos-delay="200">
             <div class="table-header">
                 <h2><i class="fas fa-list"></i> Listado de Alertas</h2>
-                <div>
-                    <form action="{{ route('alertas.marcar-todas') }}" method="POST" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn-naranja" onclick="return confirm('¿Marcar todas las alertas como leídas?')">
-                            <i class="fas fa-check-double"></i> Marcar todas como leídas
-                        </button>
-                    </form>
-                </div>
+                <form action="{{ route('alertas.marcar-todas') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-naranja" onclick="return confirm('¿Marcar todas las alertas como resueltas?')">
+                        <i class="fas fa-check-double"></i> Marcar todas como resueltas
+                    </button>
+                </form>
             </div>
             <div class="table-responsive">
                 <table id="alertasTable">
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tipo</th>
+                        <th>Cultivo/Sensor</th>
                         <th>Mensaje</th>
-                        <th>Módulo</th>
                         <th>Prioridad</th>
                         <th>Fecha/Hora</th>
                         <th>Estado</th>
@@ -765,53 +711,51 @@
                     </thead>
                     <tbody>
                     @forelse($alertas as $alerta)
-                        <tr data-estado="{{ $alerta->estado }}" data-prioridad="{{ $alerta->prioridad }}" data-modulo="{{ $alerta->modulo_id }}">
+                        <tr data-estado="{{ $alerta->estado }}" data-prioridad="{{ $alerta->prioridad }}">
                             <td>#{{ str_pad($alerta->id, 3, '0', STR_PAD_LEFT) }}</td>
                             <td>
-                                @if($alerta->tipo == 'humedad_baja' || $alerta->tipo == 'Humedad')
-                                    <i class="fas fa-tint" style="color: var(--azul-cielo);"></i> Humedad
-                                @elseif($alerta->tipo == 'luz_insuficiente' || $alerta->tipo == 'Luz')
-                                    <i class="fas fa-sun" style="color: var(--naranja);"></i> Luz
-                                @elseif($alerta->tipo == 'temperatura_alta' || $alerta->tipo == 'Temperatura')
+                                @if($alerta->tipo == 'humedad_baja' || $alerta->tipo == 'humedad_alta')
+                                    <i class="fas fa-tint" style="color: #2196F3;"></i> {{ $alerta->cultivo_nombre ?? 'Humedad' }}
+                                @elseif($alerta->tipo == 'temperatura_alta' || $alerta->tipo == 'temperatura_baja')
                                     <i class="fas fa-thermometer-half" style="color: #dc3545;"></i> Temperatura
-                                @elseif($alerta->tipo == 'ph_bajo' || $alerta->tipo == 'pH')
-                                    <i class="fas fa-flask" style="color: var(--verde-hoja);"></i> pH
+                                @elseif($alerta->tipo == 'ph_bajo' || $alerta->tipo == 'ph_alto')
+                                    <i class="fas fa-flask" style="color: #9C27B0;"></i> pH
+                                @elseif($alerta->tipo == 'luz_insuficiente')
+                                    <i class="fas fa-sun" style="color: #FF9800;"></i> Luz
                                 @else
-                                    <i class="fas fa-exclamation-triangle" style="color: var(--naranja);"></i> {{ $alerta->tipo }}
+                                    <i class="fas fa-exclamation-triangle" style="color: #FF9800;"></i> Sistema
                                 @endif
                             </td>
                             <td>{{ $alerta->mensaje }}</td>
-                            <td>{{ $alerta->modulo->nombre ?? 'General' }}</td>
                             <td>
-                                <span class="badge-alerta
-                                    @if($alerta->prioridad == 'Crítica' || $alerta->prioridad == 'Alta') badge-critica
-                                    @elseif($alerta->prioridad == 'Media') badge-media
-                                    @else badge-baja
-                                    @endif">
-                                    {{ $alerta->prioridad }}
-                                </span>
+                                    <span class="badge-alerta
+                                        @if($alerta->prioridad == 'Crítica') badge-critica
+                                        @elseif($alerta->prioridad == 'Alta') badge-alta
+                                        @elseif($alerta->prioridad == 'Media') badge-media
+                                        @else badge-baja
+                                        @endif">
+                                        {{ $alerta->prioridad }}
+                                    </span>
                             </td>
                             <td>{{ $alerta->created_at->format('d/m/Y H:i') }}</td>
                             <td>
-                                <span class="badge-alerta
-                                    @if($alerta->estado == 'Pendiente') badge-pendiente
-                                    @elseif($alerta->estado == 'Resuelta') badge-resuelta
-                                    @else badge-ignorada
-                                    @endif">
-                                    {{ $alerta->estado }}
-                                </span>
+                                    <span class="badge-alerta
+                                        @if($alerta->estado == 'Pendiente') badge-pendiente
+                                        @elseif($alerta->estado == 'Resuelta') badge-resuelta
+                                        @else badge-ignorada
+                                        @endif">
+                                        {{ $alerta->estado }}
+                                    </span>
                             </td>
                             <td>
-                                <a href="#" class="action-btn ver" onclick="verAlerta({{ $alerta->id }})"><i class="fas fa-eye"></i></a>
-
+                                <button class="action-btn ver" onclick="verAlerta({{ $alerta->id }})"><i class="fas fa-eye"></i></button>
                                 @if($alerta->estado == 'Pendiente')
-                                    <form action="{{ route('alertas.resolver', $alerta->id) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('alertas.resolver', $alerta->id) }}" method="POST" style="display: inline-block;">
                                         @csrf
                                         <button type="submit" class="action-btn resolver"><i class="fas fa-check"></i></button>
                                     </form>
                                 @endif
-
-                                <form action="{{ route('alertas.destroy', $alerta->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('¿Eliminar esta alerta?')">
+                                <form action="{{ route('alertas.destroy', $alerta->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Eliminar esta alerta?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="action-btn eliminar"><i class="fas fa-trash"></i></button>
@@ -820,7 +764,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <div class="empty-state">
                                     <i class="fas fa-bell-slash"></i>
                                     <h3>No hay alertas registradas</h3>
@@ -839,34 +783,24 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 50
-    });
+    AOS.init({ duration: 800, once: true, offset: 50 });
 
     function verAlerta(id) {
-        // Aquí puedes implementar un modal para ver detalles
-        alert('Ver detalles de alerta #' + id);
+        alert('📋 Detalles de alerta #' + id + '\n\nRevisa el monitoreo para más información.');
     }
 
     function filtrarAlertas() {
         let estado = document.getElementById('estadoFilter').value;
         let prioridad = document.getElementById('prioridadFilter').value;
-        let modulo = document.getElementById('moduloFilter').value;
         let filas = document.querySelectorAll('#alertasTable tbody tr');
 
         filas.forEach(fila => {
             let mostrar = true;
-
             if (estado && fila.dataset.estado !== estado) mostrar = false;
             if (prioridad && fila.dataset.prioridad !== prioridad) mostrar = false;
-            if (modulo && fila.dataset.modulo !== modulo) mostrar = false;
-
             fila.style.display = mostrar ? '' : 'none';
         });
     }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Siembra - SmartGarden</title>
+    <title>Editar Siembra - GrowWise</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -238,7 +238,7 @@
     <div class="form-container" data-aos="fade-up" data-aos-duration="1000">
         <div class="form-header">
             <i class="fas fa-edit"></i>
-            <h2>Editar Siembra #{{ str_pad($siembra->id, 3, '0', STR_PAD_LEFT) }}</h2>
+            <h2>Editar Siembra </h2>
             <p>Modifica los datos de la siembra</p>
         </div>
 

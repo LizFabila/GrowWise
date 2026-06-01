@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportes - SmartGarden</title>
+    <title>Reportes - GrowWise</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -573,7 +573,7 @@
     <!-- Sidebar -->
     <div class="sidebar" data-aos="fade-right" data-aos-duration="1000">
         <div class="sidebar-header">
-            <h3><i class="fas fa-seedling"></i> SmartGarden</h3>
+            <h3><i class="fas fa-seedling"></i> GrowWise</h3>
             <p>Gestión Inteligente</p>
         </div>
         <div class="sidebar-menu">
@@ -587,7 +587,7 @@
                 <li><a href="{{ route('cosechas.index') }}"><i class="fas fa-carrot"></i> Cosechas</a></li>
                 <li><a href="{{ route('evaluaciones.index') }}"><i class="fas fa-chart-bar"></i> Evaluaciones</a></li>
                 <li><a href="{{ route('configuracion.index') }}"><i class="fas fa-cog"></i> Configuración</a></li>
-            </ul>
+             </ul>
         </div>
     </div>
 
@@ -767,7 +767,13 @@
                                     N/A
                                 @endif
                             </td>
-                            <td>{{ $reporte->tamaño_formateado }}</td>
+                            <td>
+                                @if($reporte->periodo_inicio && $reporte->periodo_fin)
+                                    {{ \Carbon\Carbon::parse($reporte->periodo_inicio)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($reporte->periodo_fin)->format('d/m/Y') }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                             <td>
                                 <a href="{{ route('reportes.descargar', $reporte->id) }}" class="download-btn" title="Descargar" onclick="return confirm('¿Descargar el reporte: {{ $reporte->nombre }}?')">
                                     <i class="fas fa-download"></i>

@@ -1,440 +1,81 @@
-{{-- resources/views/Cosechas/show.blade.php --}}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Cosecha - SmartGarden</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        :root {
-            --verde-hoja: #2E7D32;
-            --verde-menta: #81C784;
-            --verde-oscuro: #1B5E20;
-            --tierra: #8D6E63;
-            --naranja: #FF9800;
-            --naranja-oscuro: #F57C00;
-            --azul-cielo: #64B5F6;
-            --fondo: #F8F9FA;
-            --gris-oscuro: #2c3e50;
-            --sombra-suave: 0 10px 30px rgba(0,0,0,0.1);
-            --sombra-media: 0 15px 40px rgba(0,0,0,0.15);
-            --transicion: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
+@extends('layouts.app')
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 40px 0;
-        }
+@section('header-title')
+    <h1>Detalle de Cosecha</h1>
+    <p>Información completa de la cosecha</p>
+@endsection
 
-        .detail-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: var(--sombra-media);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: var(--transicion);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .detail-container:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .detail-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--verde-hoja), var(--naranja));
-        }
-
-        .detail-header {
-            border-bottom: 2px solid rgba(46,125,50,0.1);
-            padding-bottom: 25px;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .detail-title {
-            color: var(--verde-hoja);
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            transition: var(--transicion);
-        }
-
-        .detail-title:hover {
-            color: var(--naranja);
-        }
-
-        .detail-badge {
-            background: linear-gradient(135deg, var(--verde-menta), var(--verde-hoja));
-            color: white;
-            padding: 8px 25px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            display: inline-block;
-            box-shadow: 0 5px 15px rgba(46,125,50,0.3);
-        }
-
-        .header-icon {
-            font-size: 5rem;
-            color: var(--verde-menta);
-            transition: var(--transicion);
-            filter: drop-shadow(0 10px 20px rgba(46,125,50,0.3));
-        }
-
-        .header-icon:hover {
-            transform: rotate(360deg) scale(1.1);
-            color: var(--naranja);
-        }
-
-        .info-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--sombra-suave);
-            transition: var(--transicion);
-            border: 1px solid rgba(46,125,50,0.1);
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: var(--sombra-media);
-            border-color: var(--verde-hoja);
-        }
-
-        .info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--verde-hoja), var(--naranja));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-            transform-origin: left;
-        }
-
-        .info-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .info-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--verde-menta), var(--verde-hoja));
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            transition: var(--transicion);
-        }
-
-        .info-card:hover .info-icon {
-            transform: scale(1.1) rotate(5deg);
-            background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
-        }
-
-        .info-label {
-            color: #888;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            color: var(--verde-oscuro);
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0;
-        }
-
-        .info-unit {
-            color: #999;
-            font-size: 0.9rem;
-            font-weight: 400;
-        }
-
-        .calidad-badge {
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .calidad-excelente {
-            background: rgba(46,125,50,0.15);
-            color: var(--verde-oscuro);
-            border: 1px solid var(--verde-hoja);
-        }
-
-        .calidad-buena {
-            background: rgba(255,152,0,0.15);
-            color: var(--naranja-oscuro);
-            border: 1px solid var(--naranja);
-        }
-
-        .calidad-regular {
-            background: rgba(220,53,69,0.15);
-            color: #dc3545;
-            border: 1px solid #dc3545;
-        }
-
-        .calidad-mala {
-            background: rgba(108,117,125,0.15);
-            color: #6c757d;
-            border: 1px solid #6c757d;
-        }
-
-        .observaciones-card {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 30px;
-            border-left: 5px solid var(--verde-hoja);
-            box-shadow: var(--sombra-suave);
-        }
-
-        .btn-custom {
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-size: 1rem;
-            transition: var(--transicion);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            border: none;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-custom::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
-            z-index: -1;
-        }
-
-        .btn-custom:hover::before {
-            left: 100%;
-        }
-
-        .btn-editar {
-            background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
-            color: white;
-            box-shadow: 0 10px 20px rgba(255,152,0,0.3);
-        }
-
-        .btn-editar:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(255,152,0,0.4);
-            color: white;
-        }
-
-        .btn-volver {
-            background: linear-gradient(135deg, #6c757d, #495057);
-            color: white;
-            box-shadow: 0 10px 20px rgba(108,117,125,0.3);
-        }
-
-        .btn-volver:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(108,117,125,0.4);
-            color: white;
-        }
-
-        .btn-eliminar {
-            background: linear-gradient(135deg, #dc3545, #b02a37);
-            color: white;
-            box-shadow: 0 10px 20px rgba(220,53,69,0.3);
-        }
-
-        .btn-eliminar:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(220,53,69,0.4);
-            color: white;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-        }
-
-        @media (max-width: 768px) {
-            .detail-container {
-                padding: 20px;
-            }
-            .detail-title {
-                font-size: 2rem;
-            }
-            .action-buttons {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="detail-container" data-aos="fade-up" data-aos-duration="1000">
-        <div class="detail-header d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="detail-title" data-aos="fade-right" data-aos-delay="200">
-                    Cosecha #{{ str_pad($cosecha->id, 3, '0', STR_PAD_LEFT) }}
-                </h1>
-                <span class="detail-badge" data-aos="fade-right" data-aos-delay="300">
-                    <i class="fas fa-calendar-alt me-2"></i>{{ $cosecha->fecha_cosecha->format('d/m/Y') }}
-                </span>
-            </div>
-            <i class="fas fa-carrot header-icon" data-aos="zoom-in" data-aos-delay="400"></i>
-        </div>
-
-        <!-- Información de la siembra relacionada -->
-        <div class="info-card" data-aos="fade-up" data-aos-delay="150" style="margin-bottom: 25px;">
-            <div class="info-icon">
-                <i class="fas fa-seedling"></i>
-            </div>
-            <div class="info-label">Siembra relacionada</div>
-            <div class="info-value">{{ $cosecha->siembra->cultivo->nombre }}</div>
-            <div class="mt-2">
-                <span class="badge" style="background: rgba(46,125,50,0.1); color: var(--verde-hoja); padding: 5px 10px; border-radius: 50px;">
-                    <i class="fas fa-layer-group me-1"></i>{{ $cosecha->siembra->modulo->nombre ?? 'Sin módulo' }} - Charola {{ $cosecha->siembra->charola }}
-                </span>
-                <span class="badge ms-2" style="background: rgba(255,152,0,0.1); color: var(--naranja); padding: 5px 10px; border-radius: 50px;">
-                    <i class="fas fa-calendar-alt me-1"></i>Siembra: {{ $cosecha->siembra->fecha_siembra->format('d/m/Y') }}
-                </span>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <!-- Cantidad -->
-            <div class="col-md-6" data-aos="fade-up" data-aos-delay="250">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-weight-scale"></i>
+@section('content')
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="table-container" data-aos="fade-up">
+                    <div class="table-header">
+                        <h2><i class="fas fa-carrot"></i> Cosecha #{{ str_pad($cosecha->id, 3, '0', STR_PAD_LEFT) }}</h2>
+                        <span class="badge-alerta badge-resuelta">
+                        <i class="fas fa-calendar-alt me-1"></i>{{ \Carbon\Carbon::parse($cosecha->fecha_cosecha)->format('d/m/Y') }}
+                    </span>
                     </div>
-                    <div class="info-label">Cantidad cosechada</div>
-                    <div class="info-value">{{ number_format($cosecha->cantidad_kg, 2) }} <span class="info-unit">kg</span></div>
-                </div>
-            </div>
 
-            <!-- Calidad -->
-            <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="info-label">Calidad</div>
-                    <div class="info-value">
-                        <span class="calidad-badge
-                            @if($cosecha->calidad == 'Excelente') calidad-excelente
-                            @elseif($cosecha->calidad == 'Buena') calidad-buena
-                            @elseif($cosecha->calidad == 'Regular') calidad-regular
-                            @else calidad-mala
-                            @endif">
-                            {{ $cosecha->calidad }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="info-card p-3 bg-light rounded-3 h-100">
+                                <h5><i class="fas fa-seedling text-success"></i> Siembra relacionada</h5>
+                                <p class="mb-1"><strong>Cultivo:</strong> {{ $cosecha->siembra->cultivo->nombre }}</p>
+                                <p class="mb-1"><strong>Módulo:</strong> {{ $cosecha->siembra->modulo->nombre ?? 'N/A' }} - Charola {{ $cosecha->siembra->charola }}</p>
+                                <p class="mb-0"><strong>Fecha de siembra:</strong> {{ \Carbon\Carbon::parse($cosecha->siembra->fecha_siembra)->format('d/m/Y') }}</p>
+                            </div>
+                        </div>
 
-        @if($cosecha->observaciones)
-            <div class="observaciones-card" data-aos="fade-up" data-aos-delay="350">
-                <div class="d-flex align-items-center mb-3">
-                    <i class="fas fa-align-left me-3" style="color: var(--verde-hoja); font-size: 1.5rem;"></i>
-                    <h5 style="color: var(--verde-hoja); margin: 0;">Observaciones</h5>
-                </div>
-                <p style="color: #666; font-size: 1.1rem; line-height: 1.8;">{{ $cosecha->observaciones }}</p>
-            </div>
-        @endif
+                        <div class="col-md-6 mb-4">
+                            <div class="info-card p-3 bg-light rounded-3 h-100">
+                                <h5><i class="fas fa-weight-scale text-success"></i> Datos de cosecha</h5>
+                                <p class="mb-1"><strong>Cantidad:</strong> {{ number_format($cosecha->cantidad_kg, 2) }} kg</p>
+                                <p class="mb-0"><strong>Calidad:</strong>
+                                    <span class="badge-alerta
+                                    @if($cosecha->calidad == 'Excelente') badge-resuelta
+                                    @elseif($cosecha->calidad == 'Buena') badge-media
+                                    @elseif($cosecha->calidad == 'Regular') badge-pendiente
+                                    @else badge-ignorada
+                                    @endif">
+                                    {{ $cosecha->calidad }}
+                                </span>
+                                </p>
+                            </div>
+                        </div>
 
-        <!-- Evaluación relacionada si existe -->
-        @if($cosecha->siembra->evaluacion)
-            <div class="info-card" data-aos="fade-up" data-aos-delay="400" style="margin-top: 25px;">
-                <div class="d-flex align-items-center">
-                    <div class="info-icon me-3" style="width: 40px; height: 40px; font-size: 1.2rem;">
-                        <i class="fas fa-chart-line"></i>
+                        @if($cosecha->observaciones)
+                            <div class="col-12 mb-4">
+                                <div class="info-card p-3 bg-light rounded-3">
+                                    <h5><i class="fas fa-align-left text-success"></i> Observaciones</h5>
+                                    <p class="mb-0">{{ $cosecha->observaciones }}</p>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($cosecha->siembra->evaluacion)
+                            <div class="col-12">
+                                <div class="info-card p-3 bg-light rounded-3">
+                                    <h5><i class="fas fa-chart-line text-success"></i> Evaluación de rendimiento</h5>
+                                    <p class="mb-1"><strong>Rendimiento:</strong> {{ $cosecha->siembra->evaluacion->rendimiento }}/10</p>
+                                    <p class="mb-0"><strong>Fecha evaluación:</strong> {{ \Carbon\Carbon::parse($cosecha->siembra->evaluacion->fecha_evaluacion)->format('d/m/Y') }}</p>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                    <div>
-                        <div class="info-label">Evaluación de rendimiento</div>
-                        <div class="d-flex align-items-center">
-                            <span style="font-size: 1.3rem; font-weight: 700; color: var(--verde-oscuro);">{{ $cosecha->siembra->evaluacion->rendimiento }}/10</span>
-                            <span class="ms-3 text-muted">
-                                <i class="fas fa-calendar-alt me-1"></i>{{ $cosecha->siembra->evaluacion->fecha_evaluacion->format('d/m/Y') }}
-                            </span>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ route('cosechas.index') }}" class="btn-outline-verde">
+                            <i class="fas fa-arrow-left"></i> Volver a Cosechas
+                        </a>
+                        <div>
+                            <a href="{{ route('cosechas.edit', $cosecha->id) }}" class="btn-naranja">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
-
-        <div class="d-flex justify-content-between align-items-center mt-5" data-aos="fade-up" data-aos-delay="450">
-            <a href="{{ route('cosechas.index') }}" class="btn-custom btn-volver">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Cosechas
-            </a>
-            <div class="action-buttons">
-                <a href="{{ route('cosechas.edit', $cosecha->id) }}" class="btn-custom btn-editar">
-                    <i class="fas fa-edit me-2"></i>Editar
-                </a>
-                <button type="button" class="btn-custom btn-eliminar" onclick="if(confirm('¿Estás seguro de eliminar esta cosecha? Esta acción no se puede deshacer.')) { document.getElementById('delete-form').submit(); }">
-                    <i class="fas fa-trash me-2"></i>Eliminar
-                </button>
-            </div>
         </div>
-
-        <form id="delete-form" action="{{ route('cosechas.destroy', $cosecha->id) }}" method="POST" style="display: none;">
-            @csrf
-            @method('DELETE')
-        </form>
     </div>
-</div>
-
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 50
-    });
-</script>
-</body>
-</html>
+@endsection

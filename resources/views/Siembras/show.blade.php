@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Siembra - SmartGarden</title>
+    <title>Detalle de Siembra - GrowWise</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -299,7 +299,7 @@
         <div class="detail-header d-flex justify-content-between align-items-center">
             <div>
                 <h1 class="detail-title" data-aos="fade-right" data-aos-delay="200">
-                    Siembra #{{ str_pad($siembra->id, 3, '0', STR_PAD_LEFT) }}
+                    Siembra
                 </h1>
                 <span class="detail-badge" data-aos="fade-right" data-aos-delay="300">
                     <i class="fas fa-calendar-alt me-2"></i>{{ $siembra->fecha_siembra->format('d/m/Y') }}

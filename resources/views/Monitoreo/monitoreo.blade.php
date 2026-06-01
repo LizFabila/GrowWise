@@ -1,10 +1,9 @@
-{{-- resources/views/Monitoreo/monitoreo.blade.php --}}
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoreo - SmartGarden</title>
+    <title>Monitoreo - GrowWise</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -49,7 +48,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 280px;
             background: white;
@@ -119,14 +117,12 @@
             color: var(--verde-hoja);
         }
 
-        /* Main content */
         .main-content {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
         }
 
-        /* Header */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -230,7 +226,6 @@
             font-weight: 600;
         }
 
-        /* Mensajes de alerta */
         .alert {
             border-radius: 50px;
             padding: 15px 25px;
@@ -250,7 +245,6 @@
             border: 1px solid rgba(220,53,69,0.2);
         }
 
-        /* Botones */
         .btn-naranja {
             background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
             color: white;
@@ -290,7 +284,6 @@
             box-shadow: 0 5px 15px rgba(46,125,50,0.3);
         }
 
-        /* Tarjetas de monitoreo rápido */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -345,7 +338,6 @@
             transform: rotate(5deg) scale(1.1);
         }
 
-        /* Gráficos */
         .charts-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -370,10 +362,12 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .chart-header h5 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--verde-hoja);
             margin: 0;
@@ -385,11 +379,32 @@
         }
 
         canvas {
-            max-height: 200px;
+            max-height: 250px;
             width: 100% !important;
         }
 
-        /* Sensores por módulo */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
         .sensores-section {
             margin-bottom: 40px;
         }
@@ -399,6 +414,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .sensores-header h2 {
@@ -414,7 +431,7 @@
 
         .sensores-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 25px;
         }
 
@@ -440,7 +457,7 @@
         }
 
         .sensor-header h6 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--verde-oscuro);
             margin: 0;
@@ -473,19 +490,20 @@
 
         .sensor-reading span:first-child {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .sensor-reading span:last-child {
             font-weight: 700;
             color: var(--verde-hoja);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .progress {
             height: 6px;
             border-radius: 10px;
             margin-top: 10px;
+            background: #e9ecef;
         }
 
         .progress-bar {
@@ -493,7 +511,6 @@
             border-radius: 10px;
         }
 
-        /* Tabla de lecturas recientes */
         .table-container {
             background: white;
             border-radius: 20px;
@@ -511,6 +528,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .table-header h5 {
@@ -540,18 +559,19 @@
             color: #666;
             font-weight: 600;
             border-bottom: 2px solid #f0f0f0;
+            font-size: 0.85rem;
         }
 
         td {
             padding: 10px;
             border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
         }
 
         tr:hover {
             background: rgba(46,125,50,0.02);
         }
 
-        /* Estado vacío */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -567,7 +587,7 @@
         }
 
         .empty-state h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #666;
             margin-bottom: 10px;
         }
@@ -577,7 +597,6 @@
             margin-bottom: 20px;
         }
 
-        /* Responsive */
         @media (max-width: 992px) {
             .dashboard {
                 flex-direction: column;
@@ -588,8 +607,15 @@
         }
 
         @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
             .charts-row {
                 grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
             }
         }
     </style>
@@ -599,7 +625,7 @@
     <!-- Sidebar -->
     <div class="sidebar" data-aos="fade-right" data-aos-duration="1000">
         <div class="sidebar-header">
-            <h3><i class="fas fa-seedling"></i> SmartGarden</h3>
+            <h3><i class="fas fa-seedling"></i> GrowWise</h3>
             <p>Gestión Inteligente</p>
         </div>
         <div class="sidebar-menu">
@@ -617,9 +643,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Header -->
         <div class="dashboard-header" data-aos="fade-down" data-aos-duration="1000">
             <div class="header-title">
                 <h1>Monitoreo Ambiental</h1>
@@ -635,166 +659,134 @@
                         <span>{{ $alertasCount }}</span>
                     @endif
                 </a>
-
-                <!-- Dropdown de usuario -->
                 <div class="dropdown">
                     <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ auth()->user()->avatar }}" alt="Profile">
+                        <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name=' . auth()->user()->nombre . '&background=2E7D32&color=fff' }}" alt="Profile">
                         <span>{{ auth()->user()->nombre }}</span>
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="{{ route('configuracion.index') }}"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
                     </ul>
                 </div>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
             </div>
         </div>
 
-        <!-- Mensajes de sesión -->
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            <div class="alert alert-success">{{ session('success') }}</div>
         @endif
-
         @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <!-- Tarjetas de resumen -->
+        <!-- Tarjetas de resumen (sin nutrientes) -->
         <div class="stats-grid">
             <div class="stat-card" data-aos="fade-up" data-aos-delay="50">
                 <div class="stat-info">
-                    <h3>{{ $stats['temperatura']['valor'] ?? '23.5' }}°C</h3>
+                    <h3>{{ $stats['temperatura']['valor'] ?? '--' }}°C</h3>
                     <p>Temperatura</p>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-thermometer-half"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-thermometer-half"></i></div>
             </div>
             <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-info">
-                    <h3>{{ $stats['humedad_ambiente']['valor'] ?? '65' }}%</h3>
-                    <p>Humedad ambiente</p>
+                    <h3>{{ $stats['humedad']['valor'] ?? '--' }}%</h3>
+                    <p>Humedad promedio</p>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-tint"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-tint"></i></div>
             </div>
             <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
                 <div class="stat-info">
-                    <h3>{{ $stats['luz']['valor'] ?? '4200' }} lux</h3>
+                    <h3>{{ $stats['luz']['valor'] ?? '--' }} lux</h3>
                     <p>Luz</p>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-sun"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-sun"></i></div>
             </div>
             <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="stat-info">
-                    <h3>{{ $stats['ph']['valor'] ?? '7.2' }}</h3>
+                    <h3>pH {{ $stats['ph']['valor'] ?? '--' }}</h3>
                     <p>pH del suelo</p>
                 </div>
-                <div class="stat-icon">
-                    <i class="fas fa-flask"></i>
-                </div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="250">
-                <div class="stat-info">
-                    <h3>{{ $stats['nutrientes']['valor'] ?? '1200' }} ppm</h3>
-                    <p>Nutrientes</p>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-leaf"></i>
-                </div>
+                <div class="stat-icon"><i class="fas fa-flask"></i></div>
             </div>
         </div>
 
         <!-- Gráficos -->
         <div class="charts-row">
+            <!-- Gráfica de Temperatura -->
             <div class="chart-card" data-aos="fade-right" data-aos-delay="100">
                 <div class="chart-header">
                     <h5><i class="fas fa-temperature-high"></i> Temperatura (°C) - Últimas 24h</h5>
-                    <select class="form-select-sm" style="width: auto;" id="tempPeriod" onchange="cargarDatosTemperatura()">
-                        <option value="24h" selected>Últimas 24h</option>
-                        <option value="7d">Última semana</option>
-                        <option value="30d">Último mes</option>
-                    </select>
                 </div>
-                <canvas id="tempChart"></canvas>
+                <canvas id="tempChart" height="200"></canvas>
             </div>
+
+            <!-- Gráfica de Humedad del Sustrato -->
             <div class="chart-card" data-aos="fade-left" data-aos-delay="200">
                 <div class="chart-header">
-                    <h5><i class="fas fa-tint"></i> Humedad suelo (%) - Últimas 24h</h5>
-                    <select class="form-select-sm" style="width: auto;" id="humedadPeriod" onchange="cargarDatosHumedad()">
-                        <option value="24h" selected>Últimas 24h</option>
-                        <option value="7d">Última semana</option>
-                        <option value="30d">Último mes</option>
-                    </select>
+                    <h5><i class="fas fa-tint"></i> Humedad del Sustrato (%) - Últimas 24h</h5>
                 </div>
-                <canvas id="humedadChart"></canvas>
+                <canvas id="humedadChart" height="200"></canvas>
+                <div class="legend" id="humedadLegend"></div>
             </div>
         </div>
 
-        <!-- Sensores por módulo -->
+        <!-- Sensores por cultivo -->
         <div class="sensores-section">
             <div class="sensores-header">
-                <h2><i class="fas fa-microchip"></i> Sensores por Módulo</h2>
-                <button class="btn-naranja btn-sm" onclick="window.location.reload()">
+                <h2><i class="fas fa-seedling"></i> Monitoreo de Cultivos</h2>
+                <button class="btn-naranja btn-sm" onclick="location.reload()">
                     <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
 
-            @if($modulos->count() > 0)
+            @if(isset($sensores) && $sensores->count() > 0)
                 <div class="sensores-grid">
-                    @foreach($modulos as $modulo)
-                        @foreach($modulo->sensores as $sensor)
+                    @foreach($sensores as $sensor)
+                        @if(str_contains($sensor->nombre, 'Humedad Sustrato'))
                             <div class="sensor-card" data-aos="zoom-in" data-aos-delay="50">
                                 <div class="sensor-header">
-                                    <h6>{{ $modulo->nombre }} - {{ $sensor->nombre }}</h6>
+                                    <h6><i class="fas fa-tint me-1" style="color: var(--naranja);"></i> {{ str_replace('Humedad Sustrato - ', '', $sensor->nombre) }}</h6>
                                     @php
+                                        $valor = $sensor->ultima_lectura ?? 0;
                                         $estado = 'success';
-                                        if($sensor->tipo == 'Humedad' && $sensor->ultima_lectura < 30) $estado = 'danger';
-                                        elseif($sensor->tipo == 'Humedad' && $sensor->ultima_lectura < 50) $estado = 'warning';
-                                        elseif($sensor->tipo == 'Temperatura' && $sensor->ultima_lectura > 30) $estado = 'danger';
+                                        if($valor < 50) $estado = 'danger';
+                                        elseif($valor < 60) $estado = 'warning';
                                     @endphp
                                     <div class="sensor-status {{ $estado }}"></div>
                                 </div>
                                 <div class="sensor-reading">
-                                    <span>{{ $sensor->tipo }}:</span>
-                                    <span>{{ $sensor->ultima_lectura ?? '0' }}{{ $sensor->unidad }}</span>
+                                    <span>Humedad del sustrato:</span>
+                                    <span>{{ $valor }}%</span>
                                 </div>
                                 <div class="progress">
-                                    @php
-                                        $porcentaje = $sensor->ultima_lectura ?? 0;
-                                        if($sensor->tipo == 'Temperatura') $porcentaje = ($porcentaje / 40) * 100;
-                                        if($sensor->tipo == 'Humedad') $porcentaje = $porcentaje;
-                                        if($sensor->tipo == 'Luz') $porcentaje = ($porcentaje / 10000) * 100;
-                                    @endphp
-                                    <div class="progress-bar" style="width: {{ min($porcentaje, 100) }}%"></div>
+                                    <div class="progress-bar" style="width: {{ min($valor, 100) }}%"></div>
                                 </div>
-                                <small class="text-muted">Última lectura: {{ $sensor->ultima_lectura_at ? $sensor->ultima_lectura_at->diffForHumans() : 'Nunca' }}</small>
+                                <div class="mt-2 d-flex justify-content-between">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i>
+                                        @if($sensor->ultima_lectura_at)
+                                            {{ \Carbon\Carbon::parse($sensor->ultima_lectura_at)->diffForHumans() }}
+                                        @else
+                                            Sin datos
+                                        @endif
+                                    </small>
+                                    <small class="text-success">
+                                        <i class="fas fa-tint"></i> Riego cada 8h
+                                    </small>
+                                </div>
                             </div>
-                        @endforeach
+                        @endif
                     @endforeach
                 </div>
             @else
                 <div class="empty-state">
-                    <i class="fas fa-microchip"></i>
-                    <h3>No hay sensores registrados</h3>
-                    <p>Los sensores aparecerán aquí cuando estén configurados</p>
+                    <i class="fas fa-seedling"></i>
+                    <h3>No hay cultivos activos</h3>
+                    <p>Registra tus siembras para ver el monitoreo</p>
+                    <a href="{{ route('siembras.create') }}" class="btn-naranja">Agregar Siembra</a>
                 </div>
             @endif
         </div>
@@ -803,34 +795,35 @@
         <div class="table-container" data-aos="fade-up" data-aos-delay="100">
             <div class="table-header">
                 <h5><i class="fas fa-history"></i> Últimas lecturas registradas</h5>
-                <a href="#" class="btn-outline-verde btn-sm">Ver histórico</a>
+                <button class="btn-outline-verde btn-sm" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
             </div>
             <div class="table-responsive">
-                <table>
+                <table class="table">
                     <thead>
                     <tr>
                         <th>Fecha/Hora</th>
-                        <th>Módulo</th>
-                        <th>Sensor</th>
+                        <th>Cultivo</th>
                         <th>Tipo</th>
                         <th>Valor</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @forelse($lecturasRecientes as $lectura)
+                    @forelse($lecturasRecientes ?? [] as $lectura)
                         <tr>
-                            <td>{{ $lectura->created_at->format('d/m/Y H:i') }}</td>
-                            <td>{{ $lectura->modulo_nombre }}</td>
-                            <td>{{ $lectura->sensor_nombre }}</td>
-                            <td>{{ $lectura->tipo }}</td>
-                            <td>{{ $lectura->valor }}{{ $lectura->unidad }}</td>
+                            <td>{{ \Carbon\Carbon::parse($lectura->created_at)->format('d/m/Y H:i') }}</td>
+                            <td>{{ str_replace('Humedad Sustrato - ', '', $lectura->sensor_nombre) }}</td>
+                            <td><i class="fas fa-tint text-primary"></i> Humedad</td>
+                            <td class="fw-bold">{{ $lectura->valor }}%</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4">
+                            <td colspan="4" class="text-center py-4">
                                 <div class="empty-state">
                                     <i class="fas fa-chart-line"></i>
-                                    <p>No hay lecturas registradas</p>
+                                    <p>Generando primeras lecturas...</p>
+                                    <small class="text-muted">Las lecturas aparecerán en los próximos minutos</small>
                                 </div>
                             </td>
                         </tr>
@@ -842,115 +835,114 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 50
-    });
+    AOS.init({ duration: 800, once: true, offset: 50 });
+
+    // Colores para cada cultivo
+    const coloresCultivos = {
+        'Rábano': '#E91E63',
+        'Lechuga': '#4CAF50',
+        'Espinaca': '#2196F3',
+        'Cilantro': '#FF9800'
+    };
+
+    // Datos de humedad por cultivo (24h)
+    const datosHumedad = {
+        'Rábano': [65, 63, 62, 60, 58, 62, 68, 72, 70, 68, 65, 63, 62, 61, 60, 62, 66, 70, 68, 65, 63, 62, 61, 60],
+        'Lechuga': [60, 58, 55, 53, 50, 55, 62, 68, 65, 62, 60, 58, 56, 54, 52, 56, 60, 65, 62, 60, 58, 56, 54, 52],
+        'Espinaca': [78, 76, 75, 73, 70, 72, 80, 85, 82, 80, 78, 76, 75, 74, 72, 74, 78, 82, 80, 78, 76, 74, 72, 70],
+        'Cilantro': [68, 66, 65, 63, 60, 62, 70, 75, 72, 70, 68, 66, 65, 64, 62, 64, 68, 72, 70, 68, 66, 64, 62, 60]
+    };
+
+    // Datos de temperatura (24h)
+    const datosTemperatura = [18.5, 18.2, 18.0, 18.5, 19.0, 20.5, 22.0, 23.5, 24.0, 24.5, 24.0, 23.0, 22.0, 21.0, 20.5, 20.0, 19.5, 19.0, 18.5, 18.0, 17.5, 17.0, 17.5, 18.0];
+
+    const horas = Array.from({length: 24}, (_, i) => i + ':00');
 
     // Gráfico de temperatura
     let tempChart;
     const ctxTemp = document.getElementById('tempChart').getContext('2d');
 
-    function cargarDatosTemperatura() {
-        let periodo = document.getElementById('tempPeriod').value;
-
-        // Aquí iría una llamada AJAX para obtener datos reales
-        // Por ahora usamos datos de ejemplo
-        let datos = {
-            '24h': [22, 21, 20, 23, 26, 27, 25, 23],
-            '7d': [21, 22, 23, 24, 25, 24, 23],
-            '30d': [20, 21, 22, 23, 24, 25, 24, 23, 22, 21]
-        };
-
-        let labels = {
-            '24h': ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
-            '7d': ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-            '30d': ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4']
-        };
-
-        if (tempChart) tempChart.destroy();
-
-        tempChart = new Chart(ctxTemp, {
-            type: 'line',
-            data: {
-                labels: labels[periodo],
-                datasets: [{
-                    label: '°C',
-                    data: datos[periodo],
-                    borderColor: '#2E7D32',
-                    backgroundColor: 'rgba(46,125,50,0.05)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#2E7D32',
-                    pointBorderColor: '#fff',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
+    tempChart = new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+            labels: horas,
+            datasets: [{
+                label: 'Temperatura (°C)',
+                data: datosTemperatura,
+                borderColor: '#2E7D32',
+                backgroundColor: 'rgba(46,125,50,0.1)',
+                borderWidth: 2.5,
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: '#2E7D32',
+                pointBorderColor: '#fff',
+                pointRadius: 3,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: true, position: 'top' },
+                tooltip: { callbacks: { label: function(context) { return context.raw + '°C'; } } }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.03)' } } }
+            scales: {
+                y: { beginAtZero: false, min: 15, max: 30, title: { display: true, text: 'Temperatura (°C)' } },
+                x: { title: { display: true, text: 'Hora' } }
             }
-        });
-    }
+        }
+    });
 
     // Gráfico de humedad
     let humedadChart;
     const ctxHum = document.getElementById('humedadChart').getContext('2d');
+    const legendContainer = document.getElementById('humedadLegend');
 
-    function cargarDatosHumedad() {
-        let periodo = document.getElementById('humedadPeriod').value;
+    const datasets = [];
 
-        let datos = {
-            '24h': [70, 68, 65, 63, 60, 58, 62, 65],
-            '7d': [65, 68, 70, 67, 64, 62, 60],
-            '30d': [68, 70, 67, 65, 63, 62, 64, 66, 68, 70]
-        };
-
-        let labels = {
-            '24h': ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
-            '7d': ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-            '30d': ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4']
-        };
-
-        if (humedadChart) humedadChart.destroy();
-
-        humedadChart = new Chart(ctxHum, {
-            type: 'line',
-            data: {
-                labels: labels[periodo],
-                datasets: [{
-                    label: '%',
-                    data: datos[periodo],
-                    borderColor: '#FF9800',
-                    backgroundColor: 'rgba(255,152,0,0.05)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#FF9800',
-                    pointBorderColor: '#fff',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.03)' } } }
-            }
+    for (const [cultivo, datos] of Object.entries(datosHumedad)) {
+        datasets.push({
+            label: cultivo,
+            data: datos,
+            borderColor: coloresCultivos[cultivo],
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: false,
+            pointBackgroundColor: coloresCultivos[cultivo],
+            pointBorderColor: '#fff',
+            pointRadius: 2,
+            pointHoverRadius: 5
         });
+
+        legendContainer.innerHTML += `
+            <div class="legend-item">
+                <div class="legend-color" style="background: ${coloresCultivos[cultivo]}"></div>
+                <span>${cultivo}</span>
+            </div>
+        `;
     }
 
-    // Inicializar gráficos
-    cargarDatosTemperatura();
-    cargarDatosHumedad();
+    humedadChart = new Chart(ctxHum, {
+        type: 'line',
+        data: { labels: horas, datasets: datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: function(context) { return context.dataset.label + ': ' + context.raw + '%'; } } }
+            },
+            scales: {
+                y: { beginAtZero: false, min: 40, max: 90, title: { display: true, text: 'Humedad (%)' } },
+                x: { title: { display: true, text: 'Hora' } }
+            }
+        }
+    });
 </script>
 </body>
 </html>

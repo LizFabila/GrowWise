@@ -698,6 +698,10 @@
                 <li><a href="#"><i class="fas fa-temperature-high"></i> Clima</a></li>
                 <li><a href="#"><i class="fas fa-bell"></i> Alertas</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+                <li><a href="{{ route('tienda.index') }}"><i class="fas fa-store"></i> Tienda</a></li>
+                <li><a href="{{ route('ventas.index') }}"><i class="fas fa-tags"></i> Mis Ventas</a></li>
+                <li><a href="{{ route('pedidos.index') }}"><i class="fas fa-shopping-cart"></i> Mis Pedidos</a></li>
+                <li><a href="{{ route('direcciones.index') }}"><i class="fas fa-map-marker-alt"></i> Direcciones</a></li>
             </ul>
         </div>
     </div>

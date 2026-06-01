@@ -16,6 +16,7 @@ class User extends Authenticatable
         'password',
         'telefono',
         'avatar',
+        'role',  // <--- AGREGAR ESTO
     ];
 
     protected $hidden = [
@@ -28,7 +29,24 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Relaciones
+    // ========== NUEVOS MÉTODOS PARA ROLES ==========
+    public function isCliente()
+    {
+        return $this->role === 'cliente';
+    }
+
+    public function isVendedor()
+    {
+        return $this->role === 'vendedor';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+    // ================================================
+
+    // Relaciones existentes (NO CAMBIAR)
     public function modulos()
     {
         return $this->hasMany(Modulo::class);
@@ -62,6 +80,27 @@ class User extends Authenticatable
     public function configuraciones()
     {
         return $this->hasMany(Configuracion::class);
+    }
+
+    // Nuevas relaciones para ventas
+    public function productosVenta()
+    {
+        return $this->hasMany(ProductoVenta::class, 'user_id');
+    }
+
+    public function ventasRealizadas()
+    {
+        return $this->hasMany(Venta::class, 'user_id_vendedor');
+    }
+
+    public function pedidosComoVendedor()
+    {
+        return $this->hasMany(Pedido::class, 'user_id_vendedor');
+    }
+
+    public function pedidosComoCliente()
+    {
+        return $this->hasMany(Pedido::class, 'user_id_cliente');
     }
 
     // Accesor
