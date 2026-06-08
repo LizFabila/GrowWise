@@ -27,7 +27,9 @@ Route::get('/', function () {
 Route::get('/prueba', function () {
     return view('prueba');
 });
-
+// Módulo: Cosechas
+Route::get('/cosechas/proximas', [CosechaController::class, 'proximas'])->name('cosechas.proximas');
+Route::resource('cosechas', CosechaController::class);
 // ===========================================
 // RUTAS DE AUTENTICACIÓN (PÚBLICAS)
 // ===========================================
@@ -61,19 +63,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Módulo: Cultivos
         Route::resource('cultivos', CultivoController::class);
-        Route::get('/cultivos/crear', [CultivoController::class, 'create'])->name('cultivos.create');
-        Route::post('/cultivos', [CultivoController::class, 'store'])->name('cultivos.store');
-        Route::get('/cultivos/{cultivo}/editar', [CultivoController::class, 'edit'])->name('cultivos.edit');
-        Route::put('/cultivos/{cultivo}', [CultivoController::class, 'update'])->name('cultivos.update');
-        Route::delete('/cultivos/{cultivo}', [CultivoController::class, 'destroy'])->name('cultivos.destroy');
 
         // Módulo: Siembras
         Route::resource('siembras', SiembraController::class);
-        Route::get('/siembras/crear', [SiembraController::class, 'create'])->name('siembras.create');
-        Route::post('/siembras', [SiembraController::class, 'store'])->name('siembras.store');
-        Route::get('/siembras/{siembra}/editar', [SiembraController::class, 'edit'])->name('siembras.edit');
-        Route::put('/siembras/{siembra}', [SiembraController::class, 'update'])->name('siembras.update');
-        Route::delete('/siembras/{siembra}', [SiembraController::class, 'destroy'])->name('siembras.destroy');
 
         // Módulo: Monitoreo
         Route::get('/monitoreo', [MonitoreoController::class, 'index'])->name('monitoreo.index');
@@ -92,21 +84,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reportes/{reporte}/pdf', [ReporteController::class, 'verPdf'])->name('reportes.ver-pdf');
         Route::delete('/reportes/{reporte}', [ReporteController::class, 'destroy'])->name('reportes.destroy');
 
-        // Módulo: Cosechas
-        Route::resource('cosechas', CosechaController::class);
-        Route::get('/cosechas/crear', [CosechaController::class, 'create'])->name('cosechas.create');
-        Route::post('/cosechas', [CosechaController::class, 'store'])->name('cosechas.store');
-        Route::get('/cosechas/{cosecha}/editar', [CosechaController::class, 'edit'])->name('cosechas.edit');
-        Route::put('/cosechas/{cosecha}', [CosechaController::class, 'update'])->name('cosechas.update');
-        Route::delete('/cosechas/{cosecha}', [CosechaController::class, 'destroy'])->name('cosechas.destroy');
+
 
         // Módulo: Evaluaciones
         Route::resource('evaluaciones', EvaluacionController::class);
-        Route::get('/evaluaciones/crear', [EvaluacionController::class, 'create'])->name('evaluaciones.create');
-        Route::post('/evaluaciones', [EvaluacionController::class, 'store'])->name('evaluaciones.store');
-        Route::get('/evaluaciones/{evaluacion}/editar', [EvaluacionController::class, 'edit'])->name('evaluaciones.edit');
-        Route::put('/evaluaciones/{evaluacion}', [EvaluacionController::class, 'update'])->name('evaluaciones.update');
-        Route::delete('/evaluaciones/{evaluacion}', [EvaluacionController::class, 'destroy'])->name('evaluaciones.destroy');
 
         // Módulo: Configuración
         Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
@@ -134,9 +115,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/carrito/agregar', [App\Http\Controllers\Cliente\TiendaClienteController::class, 'agregarCarrito'])->name('carrito.agregar');
         Route::get('/carrito', [App\Http\Controllers\Cliente\TiendaClienteController::class, 'verCarrito'])->name('carrito.ver');
         Route::delete('/carrito/eliminar/{id}', [App\Http\Controllers\Cliente\TiendaClienteController::class, 'eliminarDelCarrito'])->name('carrito.eliminar');
+        Route::post('/carrito/actualizar', [App\Http\Controllers\Cliente\TiendaClienteController::class, 'actualizarCarrito'])->name('carrito.actualizar');
         Route::post('/carrito/vaciar', [App\Http\Controllers\Cliente\TiendaClienteController::class, 'vaciarCarrito'])->name('carrito.vaciar');
 
-        Route::post('/carrito/actualizar', [App\Http\Controllers\Cliente\TiendaClienteController::class, 'actualizarCarrito'])->name('carrito.actualizar');
         // Checkout
         Route::get('/checkout/{producto_id?}', [App\Http\Controllers\Cliente\CheckoutClienteController::class, 'index'])->name('checkout.index');
         Route::post('/checkout/procesar', [App\Http\Controllers\Cliente\CheckoutClienteController::class, 'procesar'])->name('checkout.procesar');
@@ -172,11 +153,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/productos/{id}', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'update'])->name('productos.update');
         Route::delete('/productos/{id}', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'destroy'])->name('productos.destroy');
 
-        // Historial de ventas
+        // Ventas
         Route::get('/ventas', [App\Http\Controllers\Vendedor\VentaVendedorController::class, 'index'])->name('ventas.index');
         Route::get('/ventas/detalle/{id}', [App\Http\Controllers\Vendedor\VentaVendedorController::class, 'detalle'])->name('ventas.detalle');
 
-        // Pedidos recibidos
+        // Pedidos
         Route::get('/pedidos', [App\Http\Controllers\Vendedor\PedidoVendedorController::class, 'index'])->name('pedidos.index');
         Route::put('/pedidos/{id}/estado', [App\Http\Controllers\Vendedor\PedidoVendedorController::class, 'actualizarEstado'])->name('pedidos.estado');
     });
@@ -206,26 +187,12 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('cliente.direcciones.index');
     });
 
-    // Módulo de ventas para VENDEDORES
-    Route::prefix('vendedor')->name('vendedor.')->middleware(['auth', 'role:vendedor,admin'])->group(function () {
+    // ===========================================
+    // BUSCADOR DE CULTIVOS
+    // ===========================================
+    Route::get('/buscador', [App\Http\Controllers\BuscarController::class, 'index'])->name('buscar.index');
+    Route::get('/buscador/resultados', [App\Http\Controllers\BuscarController::class, 'buscar'])->name('buscar.resultados');
+    Route::get('/buscador/autocomplete', [App\Http\Controllers\BuscarController::class, 'autocomplete'])->name('buscar.autocomplete');
+    Route::get('/buscador/stats', [App\Http\Controllers\BuscarController::class, 'getStats'])->name('buscar.stats');
 
-        Route::get('/dashboard', [App\Http\Controllers\Vendedor\DashboardVendedorController::class, 'index'])->name('dashboard');
-        Route::get('/resumen-ejecutivo', [App\Http\Controllers\Vendedor\DashboardVendedorController::class, 'resumenEjecutivo'])->name('resumen');
-
-        // Gestión de productos
-        Route::get('/productos', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'index'])->name('productos.index');
-        Route::get('/productos/crear', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'crear'])->name('productos.crear');
-        Route::post('/productos', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'store'])->name('productos.store');
-        Route::get('/productos/{id}/editar', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'editar'])->name('productos.editar');
-        Route::put('/productos/{id}', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'update'])->name('productos.update');
-        Route::delete('/productos/{id}', [App\Http\Controllers\Vendedor\ProductoVendedorController::class, 'destroy'])->name('productos.destroy');
-
-        // Ventas
-        Route::get('/ventas', [App\Http\Controllers\Vendedor\VentaVendedorController::class, 'index'])->name('ventas.index');
-        Route::get('/ventas/detalle/{id}', [App\Http\Controllers\Vendedor\VentaVendedorController::class, 'detalle'])->name('ventas.detalle');
-
-        // Pedidos
-        Route::get('/pedidos', [App\Http\Controllers\Vendedor\PedidoVendedorController::class, 'index'])->name('pedidos.index');
-        Route::put('/pedidos/{id}/estado', [App\Http\Controllers\Vendedor\PedidoVendedorController::class, 'actualizarEstado'])->name('pedidos.estado');
-    });
 });

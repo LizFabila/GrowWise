@@ -14,46 +14,52 @@ class CosechaController extends Controller
     {
         $user = auth()->user();
 
+        // SOLO cosechas que ya ocurrieron (fecha <= hoy)
         $query = Cosecha::with(['siembra.cultivo', 'siembra.modulo'])
-            ->where('user_id', $user->id);
+            ->where('user_id', $user->id)
+            ->whereDate('fecha_cosecha', '<=', now());
 
-        // Aplicar filtros
-        if ($request->filled('cultivo')) {
-            $query->whereHas('siembra', function($q) use ($request) {
-                $q->where('cultivo_id', $request->cultivo);
-            });
-        }
+        // ... filtros ...
 
-        if ($request->filled('desde')) {
-            $query->whereDate('fecha_cosecha', '>=', $request->desde);
-        }
+        $cosechas = $query->orderBy('fecha_cosecha', 'desc')->paginate(10);
 
-        if ($request->filled('hasta')) {
-            $query->whereDate('fecha_cosecha', '<=', $request->hasta);
-        }
+        // Total cosechado REAL (solo lo que ya se cosechó)
+        $totalCosechadoReal = Cosecha::where('user_id', $user->id)
+            ->whereDate('fecha_cosecha', '<=', now())
+            ->sum('cantidad_kg');
 
-        if ($request->filled('calidad')) {
-            $query->where('calidad', $request->calidad);
-        }
-
-        $cosechas = $query->orderBy('fecha_cosecha', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+        // Próximas cosechas (fecha > hoy)
+        $proximasCosechas = Siembra::where('user_id', $user->id)
+            ->where('estado', 'Activa')
+            ->whereNotNull('fecha_estimada_cosecha')
+            ->whereDate('fecha_estimada_cosecha', '>', now())
+            ->count();
 
         $stats = [
-            'total' => Cosecha::where('user_id', $user->id)->count(),
-            'peso_total' => Cosecha::where('user_id', $user->id)
-                ->whereMonth('fecha_cosecha', now()->month)
-                ->sum('cantidad_kg'),
-            'pendientes' => Siembra::where('user_id', $user->id)
-                ->where('estado', 'Activa')
-                ->whereNotNull('fecha_estimada_cosecha')
-                ->where('fecha_estimada_cosecha', '<=', now()->addDays(7))
-                ->count(),
-            'calidad_promedio' => Cosecha::where('user_id', $user->id)->avg('calidad'),
+            'peso_total' => $totalCosechadoReal,
+            'pendientes' => $proximasCosechas,
         ];
 
         return view('Cosechas.cosechas', compact('cosechas', 'stats'));
+    }
+
+    // ===========================================
+    // MÉTODO PARA PRÓXIMAS COSECHAS
+    // ===========================================
+    public function proximas()
+    {
+        $user = auth()->user();
+
+        // Obtener siembras activas con fecha de cosecha en el futuro
+        $proximasCosechas = Siembra::with(['cultivo', 'modulo'])
+            ->where('user_id', $user->id)
+            ->where('estado', 'Activa')
+            ->whereNotNull('fecha_estimada_cosecha')
+            ->where('fecha_estimada_cosecha', '>', now()->toDateString())
+            ->orderBy('fecha_estimada_cosecha', 'asc')
+            ->paginate(15);
+
+        return view('Cosechas.proximas', compact('proximasCosechas'));
     }
 
     public function create()
@@ -66,7 +72,7 @@ class CosechaController extends Controller
 
         if ($siembras->isEmpty()) {
             return redirect()->route('cosechas.index')
-                ->with('info', 'No hay siembras activas disponibles para cosechar. Crea una siembra primero.');
+                ->with('info', 'No hay siembras activas disponibles para cosechar.');
         }
 
         return view('Cosechas.create', compact('siembras'));
@@ -82,12 +88,10 @@ class CosechaController extends Controller
             'observaciones' => 'nullable|string|max:500',
         ]);
 
-        // Verificar que la siembra pertenezca al usuario
         $siembra = Siembra::where('user_id', auth()->id())
             ->where('id', $request->siembra_id)
             ->firstOrFail();
 
-        // Verificar que la siembra no tenga ya una cosecha
         if ($siembra->cosecha) {
             return redirect()->back()
                 ->with('error', 'Esta siembra ya tiene una cosecha registrada.')
@@ -153,7 +157,7 @@ class CosechaController extends Controller
 
         } catch (QueryException $e) {
             return redirect()->route('cosechas.index')
-                ->with('error', 'Error al eliminar la cosecha. Por favor intenta de nuevo.');
+                ->with('error', 'Error al eliminar la cosecha.');
         }
     }
 }

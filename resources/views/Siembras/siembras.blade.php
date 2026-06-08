@@ -1,5 +1,4 @@
-{{-- resources/views/Siembras/siembras.blade.php --}}
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -42,13 +41,11 @@
             overflow-x: hidden;
         }
 
-        /* Dashboard layout */
         .dashboard {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 280px;
             background: white;
@@ -118,14 +115,12 @@
             color: var(--verde-hoja);
         }
 
-        /* Main content */
         .main-content {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
         }
 
-        /* Header */
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -229,7 +224,6 @@
             font-weight: 600;
         }
 
-        /* Mensajes de alerta */
         .alert {
             border-radius: 50px;
             padding: 15px 25px;
@@ -249,7 +243,6 @@
             border: 1px solid rgba(220,53,69,0.2);
         }
 
-        /* Botones */
         .btn-naranja {
             background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
             color: white;
@@ -288,66 +281,6 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(46,125,50,0.3);
             color: white;
-        }
-
-        /* Tarjetas de resumen */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--sombra-suave);
-            transition: var(--transicion);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(46,125,50,0.1);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: var(--sombra-media);
-        }
-
-        .stat-info h3 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--verde-hoja);
-            margin-bottom: 5px;
-        }
-
-        .stat-info p {
-            color: #666;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .stat-info small {
-            color: #999;
-            font-size: 0.8rem;
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--verde-menta), var(--verde-hoja));
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            transition: var(--transicion);
-        }
-
-        .stat-card:hover .stat-icon {
-            transform: rotate(5deg) scale(1.1);
         }
 
         /* Tabla de siembras */
@@ -443,10 +376,6 @@
             transition: var(--transicion);
         }
 
-        tr {
-            transition: var(--transicion);
-        }
-
         tr:hover {
             background: rgba(46,125,50,0.02);
         }
@@ -521,7 +450,6 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        /* Estado vacío */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -547,7 +475,6 @@
             margin-bottom: 20px;
         }
 
-        /* Responsive */
         @media (max-width: 992px) {
             .dashboard {
                 flex-direction: column;
@@ -560,9 +487,6 @@
         @media (max-width: 768px) {
             .main-content {
                 padding: 20px;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -578,14 +502,32 @@
         <div class="sidebar-menu">
             <ul>
                 <li><a href="{{ route('dashboard') }}"><i class="fas fa-home"></i> Vista general</a></li>
-                <li><a href="{{ route('cultivos.index') }}"><i class="fas fa-seedling"></i> Cultivos</a></li>
                 <li><a href="{{ route('siembras.index') }}" class="active"><i class="fas fa-sprout"></i> Siembras</a></li>
+                <li><a href="{{ route('cultivos.index') }}"><i class="fas fa-seedling"></i> Cultivos</a></li>
                 <li><a href="{{ route('monitoreo.index') }}"><i class="fas fa-thermometer-half"></i> Monitoreo</a></li>
                 <li><a href="{{ route('alertas.index') }}"><i class="fas fa-bell"></i> Alertas</a></li>
-                <li><a href="{{ route('reportes.index') }}"><i class="fas fa-file-alt"></i> Reportes</a></li>
                 <li><a href="{{ route('cosechas.index') }}"><i class="fas fa-carrot"></i> Cosechas</a></li>
+                <li><a href="{{ route('reportes.index') }}"><i class="fas fa-file-alt"></i> Reportes</a></li>
                 <li><a href="{{ route('evaluaciones.index') }}"><i class="fas fa-chart-bar"></i> Evaluaciones</a></li>
+                <li><a href="{{ route('buscar.index') }}"><i class="fas fa-search"></i> Buscar cultivos</a></li>
                 <li><a href="{{ route('configuracion.index') }}"><i class="fas fa-cog"></i> Configuración</a></li>
+
+                <li><hr class="my-2"></li>
+
+                @auth
+                    @if(auth()->user()->isVendedor() || auth()->user()->isAdmin())
+                        <li><a href="{{ route('vendedor.dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard Ventas</a></li>
+                        <li><a href="{{ route('vendedor.productos.index') }}"><i class="fas fa-tags"></i> Mis Productos</a></li>
+                        <li><a href="{{ route('vendedor.ventas.index') }}"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                        <li><a href="{{ route('vendedor.pedidos.index') }}"><i class="fas fa-truck"></i> Pedidos</a></li>
+                        <li><a href="{{ route('vendedor.resumen') }}"><i class="fas fa-chart-pie"></i> Resumen Ejecutivo</a></li>
+                    @else
+                        <li><a href="{{ route('cliente.tienda.index') }}"><i class="fas fa-store"></i> Tienda</a></li>
+                        <li><a href="{{ route('cliente.carrito.ver') }}"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
+                        <li><a href="{{ route('cliente.pedidos.index') }}"><i class="fas fa-truck"></i> Mis Pedidos</a></li>
+                        <li><a href="{{ route('cliente.direcciones.index') }}"><i class="fas fa-map-marker-alt"></i> Direcciones</a></li>
+                    @endif
+                @endauth
             </ul>
         </div>
     </div>
@@ -601,7 +543,12 @@
             <div class="header-actions">
                 <a href="{{ route('alertas.index') }}" class="notification-badge">
                     <i class="fas fa-bell"></i>
-                    <span>3</span>
+                    @php
+                        $alertasCount = \App\Models\Alerta::where('user_id', auth()->id())->where('estado', 'Pendiente')->count();
+                    @endphp
+                    @if($alertasCount > 0)
+                        <span>{{ $alertasCount }}</span>
+                    @endif
                 </a>
 
                 <!-- Dropdown de usuario -->
@@ -641,51 +588,7 @@
             </div>
         @endif
 
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="50">
-                <div class="stat-info">
-                    <h3>{{ $stats['activas'] ?? 0 }}</h3>
-                    <p>Siembras activas</p>
-                    <small>En crecimiento</small>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-sprout"></i>
-                </div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="stat-info">
-                    <h3>{{ $stats['total'] ?? 0 }}</h3>
-                    <p>Siembras totales</p>
-                    <small>Histórico</small>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-history"></i>
-                </div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
-                <div class="stat-info">
-                    <h3>{{ $stats['por_cosechar'] ?? 0 }}</h3>
-                    <p>Por cosechar</p>
-                    <small>Próximos 15 días</small>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-info">
-                    <h3>{{ $stats['con_problemas'] ?? 0 }}</h3>
-                    <p>Con problemas</p>
-                    <small>Revisar</small>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabla de siembras -->
+        <!-- Tabla de siembras (sin stats cards) -->
         <div class="table-container" data-aos="fade-up" data-aos-delay="100">
             <div class="table-header">
                 <h2><i class="fas fa-sprout"></i> Listado de Siembras</h2>
