@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nombre');                       // <--- Cambiado de 'name' a 'nombre'
+            $table->string('apellido');                     // <--- Agregado
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            //$table->string('role')->default('cliente');     // <--- Agregado para soportar tus métodos isCliente(), isVendedor()
+            $table->string('avatar')->nullable();           // <--- Agregado para almacenar la URL de ui-avatars
+            $table->string('telefono')->nullable();         // <--- Agregado (ya que está en tu $fillable)
             $table->rememberToken();
             $table->timestamps();
         });
