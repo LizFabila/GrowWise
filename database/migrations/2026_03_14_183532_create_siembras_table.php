@@ -6,20 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('siembras', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('cultivo_id')->constrained()->onDelete('cascade');
+            $table->foreignId('modulo_id')->constrained()->onDelete('cascade');
+            $table->unsignedTinyInteger('charola');
+            $table->date('fecha_siembra');
+            $table->unsignedInteger('cantidad_semillas')->nullable();
+            $table->date('fecha_estimada_cosecha')->nullable();
+            $table->date('fecha_cosecha_real')->nullable();
+            $table->enum('estado', ['Activa', 'Completada', 'Problema', 'Cancelada'])->default('Activa');
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('siembras');

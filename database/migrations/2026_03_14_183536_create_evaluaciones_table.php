@@ -8,13 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cosechas', function (Blueprint $table) {
+        Schema::create('evaluaciones', function (Blueprint $table) {
             $table->id();
             $table->foreignId('siembra_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->date('fecha_cosecha');
-            $table->decimal('cantidad_kg', 8, 2);
-            $table->enum('calidad', ['Excelente', 'Buena', 'Regular', 'Mala']);
+            $table->date('fecha_evaluacion');
+            $table->decimal('rendimiento', 3, 1);
+            $table->unsignedTinyInteger('eficiencia')->nullable();
             $table->text('observaciones')->nullable();
             $table->timestamps();
         });
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('cosechas');
+        Schema::dropIfExists('evaluaciones');
     }
 };

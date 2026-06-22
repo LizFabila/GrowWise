@@ -1,3 +1,56 @@
+# GrowWise
+
+Sistema de monitoreo hortícola con sensores IoT (ESP32) y plataforma web Laravel para gestión de cultivos, siembras, cosechas y venta de producto.
+
+## Instalación para nuevos clones
+
+> **Importante:** este proyecto usa vistas SQL y un procedimiento almacenado además de tablas normales. La forma más confiable de levantarlo es importando el dump completo en lugar de depender únicamente de `php artisan migrate`.
+
+### 1. Clonar y entrar al proyecto
+```bash
+cd C:\xampp\htdocs
+git clone https://github.com/LizFabila/GrowWise.git
+cd GrowWise
+```
+
+### 2. Instalar dependencias
+```bash
+composer install
+npm install
+```
+
+### 3. Configurar entorno
+```bash
+cp .env.ejemplo .env
+php artisan key:generate
+```
+Revisa en `.env` que `DB_DATABASE=smartgarden_db` coincida con el nombre que le des a tu base en phpMyAdmin.
+
+### 4. Crear la base de datos e importar el dump
+En phpMyAdmin (o por consola MySQL):
+1. Crea una base vacía llamada `smartgarden_db`.
+2. Ve a la pestaña **Importar** y selecciona `database/sql/smartgarden_db.sql`.
+
+Esto crea todas las tablas, vistas (`alertas_activas`, `dashboard_resumen`, `estadisticas_cosechas`, `monitoreo_actual`, `siembras_detalle`), el procedimiento almacenado `sp_costo_beneficio_vendedor`, y carga los datos de ejemplo con los que se ha trabajado el proyecto.
+
+**No corras `php artisan migrate` después de importar el .sql** — las tablas ya existen y Laravel marcaría conflicto. Las migraciones en `database/migrations/` quedan como documentación del esquema y como respaldo si en algún momento se necesita reconstruir la base desde cero (en ese caso sí: `php artisan migrate` sin haber importado el .sql).
+
+### 5. Levantar el proyecto
+```bash
+php artisan serve
+```
+Abre `http://localhost:8000`.
+
+### Compilar assets (en otra terminal, si vas a editar estilos/JS)
+```bash
+npm run dev
+```
+
+### Nota sobre los seeders
+Los seeders en `database/seeders/` (`MetodosPagoSeeder`, `UserRoleSeeder`, etc.) **no son necesarios** si ya importaste `database/sql/smartgarden_db.sql`, porque esos datos ya vienen incluidos en el dump. Correrlos después generaría registros duplicados (por ejemplo, métodos de pago repetidos). Solo úsalos si decides reconstruir la base desde cero con `php artisan migrate` en lugar de importar el .sql.
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

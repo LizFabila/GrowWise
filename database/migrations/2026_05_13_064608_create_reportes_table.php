@@ -22,7 +22,6 @@ return new class extends Migration
             $table->boolean('descargado')->default(false);
             $table->timestamps();
 
-            // Índices
             $table->index('user_id');
             $table->index('tipo');
             $table->index('created_at');
