@@ -16,21 +16,29 @@ class RoleMiddleware
 
         $user = Auth::user();
 
+        // El admin tiene acceso a TODO sin restricción de rol
+        if ($user->isAdmin()) {
+            return $next($request);
+        }
+
+        // Para otros usuarios, verificar que su rol esté en la lista permitida
         foreach ($roles as $role) {
             if ($user->role === $role) {
                 return $next($request);
             }
         }
 
-        // Redirigir según el rol en lugar de mostrar error 403
+        // Redirigir al lugar correcto según su rol real
+        if ($user->isVendedor()) {
+            return redirect()->route('vendedor.dashboard')
+                ->with('error', 'No tienes permiso para esa sección.');
+        }
+
         if ($user->isCliente()) {
-            return redirect()->route('cliente.tienda.index');
+            return redirect()->route('cliente.tienda.index')
+                ->with('error', 'No tienes permiso para esa sección.');
         }
 
-        if ($user->isVendedor() || $user->isAdmin()) {
-            return redirect()->route('vendedor.dashboard');
-        }
-
-        abort(403, 'No tienes permiso para acceder a esta sección.');
+        abort(403, 'Acceso denegado.');
     }
 }

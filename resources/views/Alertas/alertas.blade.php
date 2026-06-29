@@ -1,322 +1,231 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alertas - GrowWise</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <!-- AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+@extends('layouts.app')
+
+@section('header-title')
+    <h1>🔔 Alertas de Cosecha</h1>
+    <p>Monitoreo de todas tus próximas cosechas</p>
+@endsection
+
+@section('content')
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="stats-grid mb-4">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="50">
+                <div class="stat-info">
+                    <h3>{{ $stats['total'] }}</h3>
+                    <p>Próximas Cosechas</p>
+                    <small>Total de cultivos activos</small>
+                </div>
+                <div class="stat-icon"><i class="fas fa-seedling"></i></div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100" style="border-left: 4px solid #dc3545;">
+                <div class="stat-info">
+                    <h3 class="text-danger">{{ $stats['criticas'] }}</h3>
+                    <p>Críticas</p>
+                    <small>0-1 días</small>
+                </div>
+                <div class="stat-icon" style="background: #dc3545;"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="150" style="border-left: 4px solid #E67E22;">
+                <div class="stat-info">
+                    <h3 class="text-warning" style="color: #E67E22 !important;">{{ $stats['altas'] }}</h3>
+                    <p>Altas</p>
+                    <small>2-3 días</small>
+                </div>
+                <div class="stat-icon" style="background: #E67E22;"><i class="fas fa-bell"></i></div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200" style="border-left: 4px solid #2E7D32;">
+                <div class="stat-info">
+                    <h3 class="text-success">{{ $stats['medias'] }}</h3>
+                    <p>Medias</p>
+                    <small>4-7 días</small>
+                </div>
+                <div class="stat-icon" style="background: #2E7D32;"><i class="fas fa-clock"></i></div>
+            </div>
+        </div>
+
+        <!-- Listado de alertas -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2><i class="fas fa-list"></i> Próximas Cosechas</h2>
+                <div>
+                    <button onclick="location.reload()" class="btn-outline-verde me-2">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                    <a href="{{ route('cosechas.proximas') }}" class="btn-naranja">
+                        <i class="fas fa-calendar-week"></i> Ver Próximas
+                    </a>
+                </div>
+            </div>
+
+            @if(count($alertas) > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th style="min-width: 200px;">Cultivo</th>
+                            <th>Prioridad</th>
+                            <th>Días Restantes</th>
+                            <th>Fecha Estimada</th>
+                            <th>Progreso</th>
+                            <th>Ubicación</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($alertas as $alerta)
+                            <tr class="alerta-fila alerta-{{ $alerta['color'] }}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Mini imagen del cultivo -->
+                                        <div style="width: 38px; height: 38px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f0f4f0; display: flex; align-items: center; justify-content: center; border: 2px solid #2E7D32;">
+                                            @php
+                                                $nombreCultivo = $alerta['cultivo'];
+                                                $imagenes = [
+                                                    'Lechuga' => url('images/cultivos/lechuga.jpg'),
+                                                    'Rábano' => url('images/cultivos/rabano.jpg'),
+                                                    'Cilantro' => url('images/cultivos/cilantro.jpg'),
+                                                    'Espinaca' => url('images/cultivos/espinacas.jpg'),
+                                                    'Zanahoria' => url('images/cultivos/zanahoria.jpg'),
+                                                ];
+                                                $imgUrl = $imagenes[$nombreCultivo] ?? null;
+                                                $imgExiste = $imgUrl && file_exists(public_path(str_replace(url(''), '', $imgUrl)));
+                                            @endphp
+                                            @if($imgExiste)
+                                                <img src="{{ $imgUrl }}"
+                                                     alt="{{ $nombreCultivo }}"
+                                                     style="width: 100%; height: 100%; object-fit: cover;">
+                                            @else
+                                                <i class="fas fa-seedling text-success" style="font-size: 1.2rem;"></i>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <strong>{{ $alerta['cultivo'] }}</strong>
+                                            <br>
+                                            <small class="text-muted">Sembrado: {{ $alerta['fecha_siembra'] }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-prioridad badge-{{ $alerta['badgeColor'] }}">
+                                        <i class="fas {{ $alerta['icono'] }}"></i>
+                                        {{ $alerta['prioridad'] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge-dias badge-dias-{{ $alerta['badgeColor'] }}">
+                                        @if($alerta['dias_restantes'] <= 1)
+                                            <i class="fas fa-exclamation-circle"></i> {{ $alerta['dias_restantes'] }} día
+                                        @else
+                                            {{ $alerta['dias_restantes'] }} días
+                                        @endif
+                                    </span>
+                                </td>
+                                <td>{{ $alerta['fecha_estimada'] }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress" style="width: 100px; height: 8px; background: #e9ecef; border-radius: 10px; overflow: hidden;">
+                                            <div class="progress-bar"
+                                                 style="width: {{ $alerta['progreso'] }}%;
+                                                        height: 100%;
+                                                        @if($alerta['progreso'] >= 80) background: #2E7D32;
+                                                        @elseif($alerta['progreso'] >= 50) background: #E67E22;
+                                                        @else background: #81C784; @endif
+                                                        border-radius: 10px;
+                                                        transition: width 0.5s ease;">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ $alerta['progreso'] }}%</small>
+                                    </div>
+                                    <small class="text-muted d-block" style="font-size: 0.65rem;">
+                                        Día {{ $alerta['dias_transcurridos'] }}/{{ $alerta['dias_totales'] }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>
+                                        <i class="fas fa-layer-group text-muted"></i> Charola {{ $alerta['charola'] }}
+                                        <br>
+                                        <span class="text-muted">{{ $alerta['modulo'] }}</span>
+                                    </small>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mensaje resumen -->
+                @if($stats['criticas'] > 0)
+                    <div class="alert alert-danger mt-3" style="border-radius: 15px; border-left: 4px solid #dc3545;">
+                        <h5 class="mb-0">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            ¡Atención! Tienes {{ $stats['criticas'] }} cosecha(s) crítica(s) para MAÑANA.
+                        </h5>
+                    </div>
+                @elseif($stats['altas'] > 0)
+                    <div class="alert alert-warning mt-3" style="border-radius: 15px; border-left: 4px solid #E67E22; background: rgba(230, 126, 34, 0.08);">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell" style="color: #E67E22;"></i>
+                            Tienes {{ $stats['altas'] }} cosecha(s) de alta prioridad en los próximos 3 días.
+                        </h5>
+                    </div>
+                @elseif($stats['medias'] > 0)
+                    <div class="alert alert-success mt-3" style="border-radius: 15px; border-left: 4px solid #2E7D32; background: rgba(46, 125, 50, 0.06);">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock" style="color: #2E7D32;"></i>
+                            Tienes {{ $stats['medias'] }} cosecha(s) en los próximos 7 días.
+                        </h5>
+                    </div>
+                @endif
+            @else
+                <div class="empty-state">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    <h3>No hay cultivos activos</h3>
+                    <p>No tienes siembras activas programadas para cosecha.</p>
+                    <a href="{{ route('siembras.create') }}" class="btn-naranja mt-3">
+                        <i class="fas fa-plus-circle"></i> Nueva Siembra
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+@endsection
+
+@section('styles')
     <style>
-        :root {
-            --verde-hoja: #2E7D32;
-            --verde-menta: #81C784;
-            --verde-oscuro: #1B5E20;
-            --tierra: #8D6E63;
-            --naranja: #FF9800;
-            --naranja-oscuro: #F57C00;
-            --azul-cielo: #64B5F6;
-            --fondo: #F8F9FA;
-            --gris-oscuro: #2c3e50;
-            --sombra-suave: 0 10px 30px rgba(0,0,0,0.1);
-            --sombra-media: 0 15px 40px rgba(0,0,0,0.15);
-            --transicion: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: white;
-            box-shadow: 2px 0 20px rgba(0,0,0,0.05);
-            transition: var(--transicion);
-            position: relative;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(46,125,50,0.1);
-        }
-
-        .sidebar-header h3 {
-            font-weight: 800;
-            color: var(--verde-hoja);
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header h3 i {
-            color: var(--naranja);
-            margin-right: 10px;
-        }
-
-        .sidebar-header p {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-menu {
-            padding: 20px 0;
-        }
-
-        .sidebar-menu ul {
-            list-style: none;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 25px;
-            color: #555;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            font-weight: 500;
-        }
-
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: rgba(46,125,50,0.05);
-            color: var(--verde-hoja);
-            border-left-color: var(--verde-hoja);
-            transform: translateX(5px);
-        }
-
-        .sidebar-menu a i {
-            width: 30px;
-            font-size: 1.3rem;
-            margin-right: 10px;
-            color: var(--verde-hoja);
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px 30px;
-            border-radius: 20px;
-            box-shadow: var(--sombra-suave);
-            transition: var(--transicion);
-        }
-
-        .dashboard-header:hover {
-            box-shadow: var(--sombra-media);
-        }
-
-        .header-title h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--verde-hoja);
-            margin-bottom: 5px;
-        }
-
-        .header-title p {
-            color: #666;
-            font-size: 0.95rem;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .notification-badge {
-            position: relative;
-            font-size: 1.5rem;
-            color: #666;
-            transition: var(--transicion);
-            text-decoration: none;
-        }
-
-        .notification-badge:hover {
-            color: var(--naranja);
-            transform: scale(1.1);
-        }
-
-        .notification-badge span {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--naranja);
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 5px;
-            border-radius: 10px;
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: var(--sombra-media);
-            border-radius: 15px;
-            padding: 10px 0;
-            margin-top: 10px;
-        }
-
-        .dropdown-item {
-            padding: 10px 20px;
-            transition: var(--transicion);
-        }
-
-        .dropdown-item:hover {
-            background: rgba(46,125,50,0.05);
-            color: var(--verde-hoja);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            padding: 5px 15px;
-            border-radius: 50px;
-            transition: var(--transicion);
-            background: #f5f5f5;
-        }
-
-        .user-profile:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        .user-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-profile span {
-            font-weight: 600;
-        }
-
-        .alert {
-            border-radius: 50px;
-            padding: 15px 25px;
-            border: none;
-            margin-bottom: 20px;
-        }
-
-        .alert-success {
-            background: rgba(46,125,50,0.1);
-            color: var(--verde-hoja);
-            border: 1px solid rgba(46,125,50,0.2);
-        }
-
-        .alert-danger {
-            background: rgba(220,53,69,0.1);
-            color: #dc3545;
-            border: 1px solid rgba(220,53,69,0.2);
-        }
-
-        .btn-naranja {
-            background: linear-gradient(135deg, var(--naranja), var(--naranja-oscuro));
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: var(--transicion);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-
-        .btn-naranja:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255,152,0,0.3);
-            color: white;
-        }
-
-        .btn-outline-verde {
-            background: transparent;
-            border: 2px solid var(--verde-hoja);
-            color: var(--verde-hoja);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: var(--transicion);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-outline-verde:hover {
-            background: var(--verde-hoja);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46,125,50,0.3);
-        }
-
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .stat-card {
             background: white;
             border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--sombra-suave);
-            transition: var(--transicion);
+            padding: 20px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid rgba(46,125,50,0.1);
+            text-decoration: none;
+            cursor: default;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: var(--sombra-media);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
         }
 
         .stat-info h3 {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--verde-hoja);
-            margin-bottom: 5px;
+            margin: 0;
+            color: #2E7D32;
         }
 
         .stat-info p {
-            color: #666;
-            font-weight: 500;
-            margin-bottom: 5px;
+            margin: 0;
+            font-weight: 600;
+            color: #333;
         }
 
         .stat-info small {
@@ -327,78 +236,21 @@
         .stat-icon {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--verde-menta), var(--verde-hoja));
+            background: #2E7D32;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 2rem;
-            transition: var(--transicion);
-        }
-
-        .stat-card:hover .stat-icon {
-            transform: rotate(5deg) scale(1.1);
-        }
-
-        .filtros-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px 25px;
-            box-shadow: var(--sombra-suave);
-            transition: var(--transicion);
-            margin-bottom: 30px;
-        }
-
-        .filtros-card:hover {
-            box-shadow: var(--sombra-media);
-        }
-
-        .filtros-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .filtros-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .filtro-select {
-            padding: 8px 20px;
-            border-radius: 50px;
-            border: 1px solid #e0e0e0;
-            background: #f5f5f5;
-            font-size: 0.9rem;
-            transition: var(--transicion);
-            cursor: pointer;
-        }
-
-        .filtro-select:hover {
-            border-color: var(--verde-hoja);
-            background: white;
-        }
-
-        .filtro-select:focus {
-            outline: none;
-            border-color: var(--verde-hoja);
-            box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+            font-size: 1.8rem;
+            flex-shrink: 0;
         }
 
         .table-container {
             background: white;
             border-radius: 20px;
             padding: 25px;
-            box-shadow: var(--sombra-suave);
-            transition: var(--transicion);
-        }
-
-        .table-container:hover {
-            box-shadow: var(--sombra-media);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         .table-header {
@@ -407,139 +259,136 @@
             align-items: center;
             margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
 
         .table-header h2 {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--verde-hoja);
+            color: #2E7D32;
             margin: 0;
         }
 
-        .table-header h2 i {
-            margin-right: 10px;
-            color: var(--naranja);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 15px 10px;
-            color: #666;
-            font-weight: 600;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        td {
-            padding: 15px 10px;
-            border-bottom: 1px solid #f0f0f0;
-            transition: var(--transicion);
-        }
-
-        tr:hover {
-            background: rgba(46,125,50,0.02);
-        }
-
-        .badge-alerta {
-            padding: 5px 12px;
+        /* ========== BADGES DE PRIORIDAD ========== */
+        .badge-prioridad {
+            padding: 6px 14px;
             border-radius: 50px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .badge-critica, .badge-alta {
-            background: rgba(220,53,69,0.1);
-            color: #dc3545;
+        .badge-critica {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-alta {
+            background: #E67E22;
+            color: white;
         }
 
         .badge-media {
-            background: rgba(255,152,0,0.1);
-            color: var(--naranja-oscuro);
+            background: #2E7D32;
+            color: white;
         }
 
         .badge-baja {
-            background: rgba(46,125,50,0.1);
-            color: var(--verde-hoja);
+            background: #6c757d;
+            color: white;
         }
 
-        .badge-pendiente {
-            background: rgba(255,152,0,0.1);
-            color: var(--naranja-oscuro);
+        .badge-programada {
+            background: #e9ecef;
+            color: #495057;
         }
 
-        .badge-resuelta {
-            background: rgba(46,125,50,0.1);
-            color: var(--verde-hoja);
-        }
-
-        .badge-ignorada {
-            background: rgba(108,117,125,0.1);
-            color: #6c757d;
-        }
-
-        .action-btn {
-            width: 35px;
-            height: 35px;
-            border-radius: 10px;
+        /* ========== BADGES DE DÍAS RESTANTES ========== */
+        .badge-dias {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            color: white;
-            transition: var(--transicion);
-            margin: 0 3px;
-            border: none;
-            text-decoration: none;
+            gap: 6px;
+            border: 1px solid transparent;
         }
 
-        .action-btn.ver {
-            background: var(--azul-cielo);
+        .badge-dias-critica {
+            background: #fef0f0;
+            color: #dc3545;
+            border-color: #dc3545;
         }
 
-        .action-btn.resolver {
-            background: var(--verde-hoja);
+        .badge-dias-alta {
+            background: #fef5e8;
+            color: #E67E22;
+            border-color: #E67E22;
         }
 
-        .action-btn.ignorar {
-            background: #6c757d;
+        .badge-dias-media {
+            background: #e8f5e9;
+            color: #2E7D32;
+            border-color: #2E7D32;
         }
 
-        .action-btn.eliminar {
-            background: #dc3545;
+        .badge-dias-baja {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #ced4da;
         }
 
-        .action-btn:hover {
-            transform: scale(1.15);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .badge-dias-programada {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #dee2e6;
+        }
+
+        /* ========== FILAS DE ALERTA ========== */
+        .alerta-fila {
+            transition: all 0.3s ease;
+        }
+
+        .alerta-fila:hover {
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .alerta-critica {
+            border-left: 4px solid #dc3545;
+            background: rgba(220, 53, 69, 0.03);
+        }
+
+        .alerta-alta {
+            border-left: 4px solid #E67E22;
+            background: rgba(230, 126, 34, 0.03);
+        }
+
+        .alerta-media {
+            border-left: 4px solid #2E7D32;
+            background: rgba(46, 125, 50, 0.03);
+        }
+
+        .alerta-baja {
+            border-left: 4px solid #6c757d;
+            background: rgba(108, 117, 125, 0.02);
+        }
+
+        .alerta-programada {
+            border-left: 4px solid #dee2e6;
         }
 
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--sombra-suave);
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 20px;
         }
 
         .empty-state h3 {
-            font-size: 1.5rem;
-            color: #666;
-            margin-bottom: 10px;
+            color: #333;
+            margin: 15px 0 10px;
         }
 
         .empty-state p {
@@ -547,281 +396,66 @@
             margin-bottom: 20px;
         }
 
-        @media (max-width: 992px) {
-            .dashboard {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-            }
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .btn-outline-verde {
+            background: transparent;
+            border: 2px solid #2E7D32;
+            color: #2E7D32;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline-verde:hover {
+            background: #2E7D32;
+            color: white;
+        }
+
+        .btn-naranja {
+            background: #E67E22;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-naranja:hover {
+            background: #D35400;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(230,126,34,0.3);
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                padding: 20px;
-            }
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .filtros-grid {
+
+            .table-header {
                 flex-direction: column;
                 align-items: stretch;
             }
+
+            .table-header .btn {
+                text-align: center;
+            }
+
+            .table td:first-child .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
         }
     </style>
-</head>
-<body>
-<div class="dashboard">
-    <!-- Sidebar -->
-    <div class="sidebar" data-aos="fade-right" data-aos-duration="1000">
-        <div class="sidebar-header">
-            <h3><i class="fas fa-seedling"></i> GrowWise</h3>
-            <p>Gestión Inteligente</p>
-        </div>
-        <div class="sidebar-menu">
-            <ul>
-                <li><a href="{{ route('dashboard') }}"><i class="fas fa-home"></i> Vista general</a></li>
-                <li><a href="{{ route('siembras.index') }}"><i class="fas fa-sprout"></i> Siembras</a></li>
-                <li><a href="{{ route('cultivos.index') }}"><i class="fas fa-seedling"></i> Cultivos</a></li>
-                <li><a href="{{ route('monitoreo.index') }}"><i class="fas fa-thermometer-half"></i> Monitoreo</a></li>
-                <li><a href="{{ route('alertas.index') }}" class="active"><i class="fas fa-bell"></i> Alertas</a></li>
-                <li><a href="{{ route('cosechas.index') }}"><i class="fas fa-carrot"></i> Cosechas</a></li>
-                <li><a href="{{ route('reportes.index') }}"><i class="fas fa-file-alt"></i> Reportes</a></li>
-                <li><a href="{{ route('evaluaciones.index') }}"><i class="fas fa-chart-bar"></i> Evaluaciones</a></li>
-                <li><a href="{{ route('configuracion.index') }}"><i class="fas fa-cog"></i> Configuración</a></li>
-
-                <li><hr class="my-2"></li>
-
-                @auth
-                    @if(auth()->user()->isVendedor() || auth()->user()->isAdmin())
-                        <li><a href="{{ route('vendedor.dashboard') }}"><i class="fas fa-chart-line"></i> Dashboard Ventas</a></li>
-                        <li><a href="{{ route('vendedor.productos.index') }}"><i class="fas fa-tags"></i> Mis Productos</a></li>
-                        <li><a href="{{ route('vendedor.ventas.index') }}"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
-                        <li><a href="{{ route('vendedor.pedidos.index') }}"><i class="fas fa-truck"></i> Pedidos</a></li>
-                        <li><a href="{{ route('vendedor.resumen') }}"><i class="fas fa-chart-pie"></i> Resumen Ejecutivo</a></li>
-                    @else
-                        <li><a href="{{ route('cliente.tienda.index') }}"><i class="fas fa-store"></i> Tienda</a></li>
-                        <li><a href="{{ route('cliente.carrito.ver') }}"><i class="fas fa-shopping-cart"></i> Carrito</a></li>
-                        <li><a href="{{ route('cliente.pedidos.index') }}"><i class="fas fa-truck"></i> Mis Pedidos</a></li>
-                        <li><a href="{{ route('cliente.direcciones.index') }}"><i class="fas fa-map-marker-alt"></i> Direcciones</a></li>
-                        <li><a href="{{ route('buscar.index') }}"><i class="fas fa-search"></i> Buscar cultivos</a></li>
-                    @endif
-                @endauth
-            </ul>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="dashboard-header" data-aos="fade-down" data-aos-duration="1000">
-            <div class="header-title">
-                <h1>Alertas y Notificaciones</h1>
-                <p>Monitorea los eventos importantes de tu cultivo</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('alertas.index') }}" class="notification-badge">
-                    <i class="fas fa-bell"></i>
-                    @if($stats['pendientes'] > 0)
-                        <span>{{ $stats['pendientes'] }}</span>
-                    @endif
-                </a>
-                <div class="dropdown">
-                    <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ auth()->user()->avatar }}" alt="Profile">
-                        <span>{{ auth()->user()->nombre }}</span>
-                    </div>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('configuracion.index') }}"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
-            </div>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-        <div class="stats-grid">
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="50">
-                <div class="stat-info">
-                    <h3>{{ $stats['pendientes'] }}</h3>
-                    <p>Pendientes</p>
-                    <small>Requieren atención</small>
-                </div>
-                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="stat-info">
-                    <h3>{{ $stats['resueltas_hoy'] }}</h3>
-                    <p>Resueltas (hoy)</p>
-                    <small>Últimas 24h</small>
-                </div>
-                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="150">
-                <div class="stat-info">
-                    <h3>{{ $stats['criticas'] }}</h3>
-                    <p>Críticas</p>
-                    <small>Alta prioridad</small>
-                </div>
-                <div class="stat-icon"><i class="fas fa-bell"></i></div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-info">
-                    <h3>{{ $stats['total_mes'] }}</h3>
-                    <p>Total (mes)</p>
-                    <small>Histórico</small>
-                </div>
-                <div class="stat-icon"><i class="fas fa-history"></i></div>
-            </div>
-        </div>
-
-        <div class="filtros-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="filtros-grid">
-                <div class="filtros-group">
-                    <select class="filtro-select" id="estadoFilter" onchange="filtrarAlertas()">
-                        <option value="">Todas las alertas</option>
-                        <option value="Pendiente">Pendientes</option>
-                        <option value="Resuelta">Resueltas</option>
-                        <option value="Ignorada">Ignoradas</option>
-                    </select>
-                    <select class="filtro-select" id="prioridadFilter" onchange="filtrarAlertas()">
-                        <option value="">Todas las prioridades</option>
-                        <option value="Crítica">Críticas</option>
-                        <option value="Alta">Altas</option>
-                        <option value="Media">Medias</option>
-                        <option value="Baja">Bajas</option>
-                    </select>
-                </div>
-                <button class="btn-naranja" onclick="filtrarAlertas()">
-                    <i class="fas fa-filter"></i> Filtrar
-                </button>
-            </div>
-        </div>
-
-        <div class="table-container" data-aos="fade-up" data-aos-delay="200">
-            <div class="table-header">
-                <h2><i class="fas fa-list"></i> Listado de Alertas</h2>
-                <form action="{{ route('alertas.marcar-todas') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn-naranja" onclick="return confirm('¿Marcar todas las alertas como resueltas?')">
-                        <i class="fas fa-check-double"></i> Marcar todas como resueltas
-                    </button>
-                </form>
-            </div>
-            <div class="table-responsive">
-                <table id="alertasTable">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Cultivo/Sensor</th>
-                        <th>Mensaje</th>
-                        <th>Prioridad</th>
-                        <th>Fecha/Hora</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($alertas as $alerta)
-                        <tr data-estado="{{ $alerta->estado }}" data-prioridad="{{ $alerta->prioridad }}">
-                            <td>#{{ str_pad($alerta->id, 3, '0', STR_PAD_LEFT) }}</td>
-                            <td>
-                                @if($alerta->tipo == 'humedad_baja' || $alerta->tipo == 'humedad_alta')
-                                    <i class="fas fa-tint" style="color: #2196F3;"></i> {{ $alerta->cultivo_nombre ?? 'Humedad' }}
-                                @elseif($alerta->tipo == 'temperatura_alta' || $alerta->tipo == 'temperatura_baja')
-                                    <i class="fas fa-thermometer-half" style="color: #dc3545;"></i> Temperatura
-                                @elseif($alerta->tipo == 'ph_bajo' || $alerta->tipo == 'ph_alto')
-                                    <i class="fas fa-flask" style="color: #9C27B0;"></i> pH
-                                @elseif($alerta->tipo == 'luz_insuficiente')
-                                    <i class="fas fa-sun" style="color: #FF9800;"></i> Luz
-                                @else
-                                    <i class="fas fa-exclamation-triangle" style="color: #FF9800;"></i> Sistema
-                                @endif
-                            </td>
-                            <td>{{ $alerta->mensaje }}</td>
-                            <td>
-                                    <span class="badge-alerta
-                                        @if($alerta->prioridad == 'Crítica') badge-critica
-                                        @elseif($alerta->prioridad == 'Alta') badge-alta
-                                        @elseif($alerta->prioridad == 'Media') badge-media
-                                        @else badge-baja
-                                        @endif">
-                                        {{ $alerta->prioridad }}
-                                    </span>
-                            </td>
-                            <td>{{ $alerta->created_at->format('d/m/Y H:i') }}</td>
-                            <td>
-                                    <span class="badge-alerta
-                                        @if($alerta->estado == 'Pendiente') badge-pendiente
-                                        @elseif($alerta->estado == 'Resuelta') badge-resuelta
-                                        @else badge-ignorada
-                                        @endif">
-                                        {{ $alerta->estado }}
-                                    </span>
-                            </td>
-                            <td>
-                                <button class="action-btn ver" onclick="verAlerta({{ $alerta->id }})"><i class="fas fa-eye"></i></button>
-                                @if($alerta->estado == 'Pendiente')
-                                    <form action="{{ route('alertas.resolver', $alerta->id) }}" method="POST" style="display: inline-block;">
-                                        @csrf
-                                        <button type="submit" class="action-btn resolver"><i class="fas fa-check"></i></button>
-                                    </form>
-                                @endif
-                                <form action="{{ route('alertas.destroy', $alerta->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Eliminar esta alerta?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-btn eliminar"><i class="fas fa-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <div class="empty-state">
-                                    <i class="fas fa-bell-slash"></i>
-                                    <h3>No hay alertas registradas</h3>
-                                    <p>Las alertas aparecerán aquí cuando ocurran eventos importantes</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex justify-content-end mt-3">
-                {{ $alertas->links() }}
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({ duration: 800, once: true, offset: 50 });
-
-    function verAlerta(id) {
-        alert('📋 Detalles de alerta #' + id + '\n\nRevisa el monitoreo para más información.');
-    }
-
-    function filtrarAlertas() {
-        let estado = document.getElementById('estadoFilter').value;
-        let prioridad = document.getElementById('prioridadFilter').value;
-        let filas = document.querySelectorAll('#alertasTable tbody tr');
-
-        filas.forEach(fila => {
-            let mostrar = true;
-            if (estado && fila.dataset.estado !== estado) mostrar = false;
-            if (prioridad && fila.dataset.prioridad !== prioridad) mostrar = false;
-            fila.style.display = mostrar ? '' : 'none';
-        });
-    }
-</script>
-</body>
-</html>
+@endsection

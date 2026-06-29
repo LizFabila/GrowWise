@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reporte extends Model
 {
-    protected $table = 'reportes';
-
     protected $fillable = [
         'user_id',
         'nombre',
@@ -18,16 +16,10 @@ class Reporte extends Model
         'archivo_url',
         'tamaño_kb',
         'parametros',
-        'descargado'
+        'descargado',
     ];
 
-    protected $casts = [
-        'periodo_inicio' => 'date',
-        'periodo_fin' => 'date',
-        'parametros' => 'array',
-        'descargado' => 'boolean'
-    ];
-
+    // Relación con el usuario
     public function user()
     {
         return $this->belongsTo(User::class);

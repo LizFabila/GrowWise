@@ -30,6 +30,12 @@ class Siembra extends Model
     ];
 
     // Relaciones
+    public function lecturas()
+    {
+        return $this->hasMany(LecturaSensor::class);
+    }
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

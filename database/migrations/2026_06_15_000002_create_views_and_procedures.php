@@ -5,32 +5,19 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Vistas y procedimientos almacenados que existían en la base de datos
-     * real (phpMyAdmin) pero nunca se habían versionado como migración.
-     * Laravel no gestiona vistas/procedimientos con Schema::, por eso van
-     * en SQL crudo con DB::unprepared().
-     */
-    public function up(): void
+    public function up()
     {
-        DB::unprepared("
+        // ----- VISTAS (ya usan CREATE OR REPLACE, no necesitan cambios) -----
+        DB::statement("
             CREATE OR REPLACE VIEW `alertas_activas` AS
-            SELECT
-                a.id AS id,
-                a.user_id AS user_id,
-                CONCAT(u.nombre, ' ', u.apellido) AS usuario,
-                a.titulo AS titulo,
-                a.mensaje AS mensaje,
-                a.prioridad AS prioridad,
-                a.created_at AS created_at,
-                TIMESTAMPDIFF(MINUTE, a.created_at, CURRENT_TIMESTAMP()) AS minutos_transcurridos,
-                CASE
-                    WHEN TIMESTAMPDIFF(HOUR, a.created_at, CURRENT_TIMESTAMP()) < 1 THEN 'Reciente'
-                    WHEN TIMESTAMPDIFF(HOUR, a.created_at, CURRENT_TIMESTAMP()) < 24 THEN 'Hoy'
-                    ELSE 'Antigua'
-                END AS antiguedad,
-                m.nombre AS modulo,
-                s.nombre AS sensor
+            SELECT a.id AS id, a.user_id AS user_id, CONCAT(u.nombre, ' ', u.apellido) AS usuario,
+                   a.titulo AS titulo, a.mensaje AS mensaje, a.prioridad AS prioridad,
+                   a.created_at AS created_at,
+                   TIMESTAMPDIFF(MINUTE, a.created_at, CURRENT_TIMESTAMP()) AS minutos_transcurridos,
+                   CASE WHEN TIMESTAMPDIFF(HOUR, a.created_at, CURRENT_TIMESTAMP()) < 1 THEN 'Reciente'
+                        WHEN TIMESTAMPDIFF(HOUR, a.created_at, CURRENT_TIMESTAMP()) < 24 THEN 'Hoy'
+                        ELSE 'Antigua' END AS antiguedad,
+                   m.nombre AS modulo, s.nombre AS sensor
             FROM alertas a
             JOIN users u ON a.user_id = u.id
             LEFT JOIN modulos m ON a.modulo_id = m.id
@@ -39,28 +26,28 @@ return new class extends Migration
             ORDER BY FIELD(a.prioridad, 'Crítica', 'Alta', 'Media', 'Baja') ASC, a.created_at DESC
         ");
 
-        DB::unprepared("
+        DB::statement("
             CREATE OR REPLACE VIEW `dashboard_resumen` AS
             SELECT
                 u.id AS user_id,
-                (SELECT COUNT(0) FROM siembras WHERE siembras.user_id = u.id AND siembras.estado = 'Activa') AS siembras_activas,
-                (SELECT COUNT(0) FROM siembras WHERE siembras.user_id = u.id) AS total_siembras,
-                (SELECT COUNT(0) FROM alertas WHERE alertas.user_id = u.id AND alertas.estado = 'Pendiente') AS alertas_pendientes,
-                (SELECT COUNT(0) FROM modulos WHERE modulos.user_id = u.id AND modulos.activo = 1) AS modulos_activos,
-                (SELECT COUNT(0) FROM cosechas WHERE cosechas.user_id = u.id) AS total_cosechas,
+                (SELECT COUNT(*) FROM siembras WHERE siembras.user_id = u.id AND siembras.estado = 'Activa') AS siembras_activas,
+                (SELECT COUNT(*) FROM siembras WHERE siembras.user_id = u.id) AS total_siembras,
+                (SELECT COUNT(*) FROM alertas WHERE alertas.user_id = u.id AND alertas.estado = 'Pendiente') AS alertas_pendientes,
+                (SELECT COUNT(*) FROM modulos WHERE modulos.user_id = u.id AND modulos.activo = 1) AS modulos_activos,
+                (SELECT COUNT(*) FROM cosechas WHERE cosechas.user_id = u.id) AS total_cosechas,
                 (SELECT COALESCE(SUM(cosechas.cantidad_kg), 0) FROM cosechas WHERE cosechas.user_id = u.id AND cosechas.fecha_cosecha >= CURDATE() - INTERVAL 30 DAY) AS kg_ultimo_mes,
                 (SELECT COALESCE(AVG(e.rendimiento), 0) FROM evaluaciones e JOIN siembras s ON e.siembra_id = s.id WHERE s.user_id = u.id) AS rendimiento_promedio
             FROM users u
         ");
 
-        DB::unprepared("
+        DB::statement("
             CREATE OR REPLACE VIEW `estadisticas_cosechas` AS
             SELECT
                 u.id AS user_id,
                 CONCAT(u.nombre, ' ', u.apellido) AS usuario,
                 YEAR(c.fecha_cosecha) AS año,
                 MONTH(c.fecha_cosecha) AS mes,
-                COUNT(0) AS total_cosechas,
+                COUNT(*) AS total_cosechas,
                 SUM(c.cantidad_kg) AS total_kg,
                 AVG(c.cantidad_kg) AS promedio_kg,
                 COUNT(CASE WHEN c.calidad = 'Excelente' THEN 1 END) AS excelentes,
@@ -72,45 +59,27 @@ return new class extends Migration
             GROUP BY u.id, u.nombre, u.apellido, YEAR(c.fecha_cosecha), MONTH(c.fecha_cosecha)
         ");
 
-        DB::unprepared("
+        DB::statement("
             CREATE OR REPLACE VIEW `monitoreo_actual` AS
             SELECT
-                m.id AS modulo_id,
-                m.nombre AS modulo,
-                m.user_id AS user_id,
-                s.id AS sensor_id,
-                s.nombre AS sensor,
-                s.tipo AS tipo,
-                s.unidad AS unidad,
-                l.valor AS valor,
-                l.created_at AS ultima_lectura,
+                m.id AS modulo_id, m.nombre AS modulo, m.user_id AS user_id,
+                s.id AS sensor_id, s.nombre AS sensor, s.tipo AS tipo, s.unidad AS unidad,
+                l.valor AS valor, l.created_at AS ultima_lectura,
                 TIMESTAMPDIFF(MINUTE, l.created_at, CURRENT_TIMESTAMP()) AS minutos_desde_lectura,
-                CASE
-                    WHEN TIMESTAMPDIFF(MINUTE, l.created_at, CURRENT_TIMESTAMP()) > 60 THEN 'Obsoleto'
-                    ELSE 'Actualizado'
-                END AS estado_lectura
+                CASE WHEN TIMESTAMPDIFF(MINUTE, l.created_at, CURRENT_TIMESTAMP()) > 60 THEN 'Obsoleto' ELSE 'Actualizado' END AS estado_lectura
             FROM modulos m
             JOIN sensores s ON m.id = s.modulo_id
             LEFT JOIN lecturas_sensores l ON s.id = l.sensor_id
-            WHERE l.id IN (SELECT MAX(lecturas_sensores.id) FROM lecturas_sensores GROUP BY lecturas_sensores.sensor_id)
-               OR l.id IS NULL
+            WHERE l.id IN (SELECT MAX(lecturas_sensores.id) FROM lecturas_sensores GROUP BY lecturas_sensores.sensor_id) OR l.id IS NULL
         ");
 
-        DB::unprepared("
+        DB::statement("
             CREATE OR REPLACE VIEW `siembras_detalle` AS
             SELECT
-                s.id AS id,
-                s.user_id AS user_id,
-                CONCAT(u.nombre, ' ', u.apellido) AS usuario,
-                c.nombre AS cultivo,
-                c.tipo AS tipo_cultivo,
-                m.nombre AS modulo,
-                m.ubicacion AS ubicacion,
-                s.charola AS charola,
-                s.fecha_siembra AS fecha_siembra,
-                s.fecha_estimada_cosecha AS fecha_estimada_cosecha,
-                s.fecha_cosecha_real AS fecha_cosecha_real,
-                s.estado AS estado,
+                s.id AS id, s.user_id AS user_id, CONCAT(u.nombre, ' ', u.apellido) AS usuario,
+                c.nombre AS cultivo, c.tipo AS tipo_cultivo, m.nombre AS modulo, m.ubicacion AS ubicacion,
+                s.charola AS charola, s.fecha_siembra AS fecha_siembra, s.fecha_estimada_cosecha AS fecha_estimada_cosecha,
+                s.fecha_cosecha_real AS fecha_cosecha_real, s.estado AS estado,
                 TO_DAYS(s.fecha_estimada_cosecha) - TO_DAYS(CURDATE()) AS dias_restantes,
                 CASE
                     WHEN s.estado = 'Completada' THEN 100
@@ -123,7 +92,11 @@ return new class extends Migration
             JOIN modulos m ON s.modulo_id = m.id
         ");
 
-        DB::unprepared("
+        // ----- PROCEDIMIENTOS (ahora con DROP IF EXISTS) -----
+
+        // Eliminar procedimiento si ya existe
+        DB::statement('DROP PROCEDURE IF EXISTS sp_costo_beneficio_vendedor');
+        DB::statement("
             CREATE PROCEDURE `sp_costo_beneficio_vendedor` (IN `p_vendedor_id` INT)
             BEGIN
                 DECLARE v_total_vendido DECIMAL(10,2) DEFAULT 0;
@@ -206,21 +179,25 @@ return new class extends Migration
             END
         ");
 
-        DB::unprepared("
+        // Si tienes otro procedimiento, haz lo mismo:
+        DB::statement('DROP PROCEDURE IF EXISTS sp_generar_alerta_por_lectura');
+        DB::statement("
             CREATE PROCEDURE `sp_generar_alerta_por_lectura` (IN `p_sensor_id` INT, IN `p_valor` DECIMAL(8,2))
             BEGIN
+                -- Contenido del procedimiento (puede estar vacío o con lógica)
             END
         ");
     }
 
-    public function down(): void
+    public function down()
     {
-        DB::unprepared('DROP VIEW IF EXISTS `siembras_detalle`');
-        DB::unprepared('DROP VIEW IF EXISTS `monitoreo_actual`');
-        DB::unprepared('DROP VIEW IF EXISTS `estadisticas_cosechas`');
-        DB::unprepared('DROP VIEW IF EXISTS `dashboard_resumen`');
-        DB::unprepared('DROP VIEW IF EXISTS `alertas_activas`');
-        DB::unprepared('DROP PROCEDURE IF EXISTS `sp_generar_alerta_por_lectura`');
-        DB::unprepared('DROP PROCEDURE IF EXISTS `sp_costo_beneficio_vendedor`');
+        // Eliminar vistas y procedimientos (opcional)
+        DB::statement('DROP VIEW IF EXISTS alertas_activas');
+        DB::statement('DROP VIEW IF EXISTS dashboard_resumen');
+        DB::statement('DROP VIEW IF EXISTS estadisticas_cosechas');
+        DB::statement('DROP VIEW IF EXISTS monitoreo_actual');
+        DB::statement('DROP VIEW IF EXISTS siembras_detalle');
+        DB::statement('DROP PROCEDURE IF EXISTS sp_costo_beneficio_vendedor');
+        DB::statement('DROP PROCEDURE IF EXISTS sp_generar_alerta_por_lectura');
     }
 };

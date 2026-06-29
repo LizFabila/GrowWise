@@ -44,6 +44,10 @@ class Cultivo extends Model
         return $this->hasMany(Siembra::class);
     }
 
+    public function lecturas()
+    {
+        return $this->hasMany(LecturaSensor::class, 'cultivo_id');
+    }
     // Scopes
     public function scopeActivo($query)
     {

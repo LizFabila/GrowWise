@@ -6,24 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
-        Schema::create('sensores', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('modulo_id')->constrained()->onDelete('cascade');
-            $table->string('nombre', 50);
-            $table->enum('tipo', ['Temperatura', 'Humedad', 'Luz', 'pH', 'Nutrientes']);
-            $table->string('unidad', 10);
-            $table->string('ubicacion', 50)->nullable();
-            $table->boolean('activo')->default(true);
-            $table->decimal('ultima_lectura', 8, 2)->nullable();
-            $table->timestamp('ultima_lectura_at')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('lecturas_sensores')) {
+            Schema::create('lecturas_sensores', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('sensor_id');
+                $table->decimal('valor', 8, 2);
+                $table->timestamp('created_at')->useCurrent();
+                // Si necesitas más columnas, agrégalas aquí
+            });
+        }
     }
 
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('sensores');
+        if (Schema::hasTable('lecturas_sensores')) {
+            Schema::dropIfExists('lecturas_sensores');
+        }
     }
 };

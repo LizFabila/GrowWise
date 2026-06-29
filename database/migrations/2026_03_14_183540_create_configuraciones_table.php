@@ -6,19 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
-        Schema::create('configuraciones', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('tipo', 50);
-            $table->string('clave', 100);
-            $table->text('valor');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('configuraciones')) {
+            Schema::create('configuraciones', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('user_id');
+                $table->string('tipo', 50);
+                $table->string('clave', 100);
+                $table->text('valor');
+                $table->timestamps();
+            });
+        }
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('configuraciones');
     }

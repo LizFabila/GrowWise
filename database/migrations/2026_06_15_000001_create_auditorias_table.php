@@ -6,20 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
-        Schema::create('auditorias', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('tabla');
-            $table->string('accion');
-            $table->json('antes')->nullable();
-            $table->json('despues')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('auditorias')) {
+            Schema::create('auditorias', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->string('tabla');
+                $table->string('accion');
+                $table->json('antes')->nullable();
+                $table->json('despues')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('auditorias');
     }

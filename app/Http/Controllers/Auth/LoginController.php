@@ -25,8 +25,11 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            // Redirigir según el rol
-            if ($user->isVendedor() || $user->isAdmin()) {
+            if ($user->isAdmin()) {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+
+            if ($user->isVendedor()) {
                 return redirect()->intended(route('vendedor.dashboard'));
             }
 
