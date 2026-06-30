@@ -8,21 +8,19 @@ return new class extends Migration
 {
     public function up()
     {
-        if (!Schema::hasTable('lecturas_sensores')) {
-            Schema::create('lecturas_sensores', function (Blueprint $table) {
-                $table->id();
-                $table->unsignedBigInteger('sensor_id');
-                $table->decimal('valor', 8, 2);
-                $table->timestamp('created_at')->useCurrent();
-                // Si necesitas más columnas, agrégalas aquí
-            });
-        }
+        Schema::create('sensores', function (Blueprint $table) {
+            $table->id(); // Este es el ID que busca la tabla de alertas
+            $table->string('nombre', 100);
+            $table->string('tipo', 50); // Ej. Temperatura, Humedad, pH
+            $table->string('unidad', 20)->nullable();
+            $table->string('pin', 10);  // Para saber a qué pin del ESP32/Arduino va conectado
+            $table->foreignId('modulo_id')->nullable()->constrained('modulos')->onDelete('cascade');
+            $table->timestamps();
+        });
     }
 
     public function down()
     {
-        if (Schema::hasTable('lecturas_sensores')) {
-            Schema::dropIfExists('lecturas_sensores');
-        }
+        Schema::dropIfExists('sensores');
     }
 };

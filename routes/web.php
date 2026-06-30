@@ -41,7 +41,10 @@ Route::middleware(['auth'])->group(function () {
     // Redirección después de login según rol
     Route::get('/redirect', function () {
         $user = auth()->user();
-        if ($user->isVendedor() || $user->isAdmin()) {
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        if ($user->isVendedor()) {
             return redirect()->route('vendedor.dashboard');
         }
         return redirect()->route('cliente.tienda.index');
@@ -177,5 +180,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buscador/stats', [App\Http\Controllers\BuscarController::class, 'getStats'])->name('buscar.stats');
     });
 
-    // ... resto de rutas (admin)
+    // ===========================================
+    // MÓDULO DE ADMINISTRACIÓN (SOLO PARA ADMIN)
+    // ===========================================
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Dashboard del Administrador
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardAdminController::class, 'index'])->name('dashboard');
+
+        // Gestión de Usuarios por el Admin
+        Route::get('/usuarios', [App\Http\Controllers\Admin\UsuarioAdminController::class, 'index'])->name('usuarios.index');
+        Route::get('/usuarios/crear', [App\Http\Controllers\Admin\UsuarioAdminController::class, 'create'])->name('usuarios.create'); // 👈 Cambiado 'crear' por 'create'
+        Route::get('/usuarios/{id}/editar', [App\Http\Controllers\Admin\UsuarioAdminController::class, 'edit'])->name('usuarios.edit');  // 👈 Cambiado 'editar' por 'edit'
+        // Monitoreo y Sistemas del Admin
+        Route::get('/monitoreo', [App\Http\Controllers\Admin\MonitoreoAdminController::class, 'index'])->name('monitoreo.index');
+        Route::get('/sistema/alertas', [App\Http\Controllers\Admin\SistemaAdminController::class, 'alertas'])->name('sistema.alertas');
+        Route::get('/sistema/modulos', [App\Http\Controllers\Admin\SistemaAdminController::class, 'modulos'])->name('sistema.modulos');
+
+        // Módulos complementarios del Admin
+        Route::get('/siembras', [App\Http\Controllers\Admin\SiembraAdminController::class, 'index'])->name('siembras.index');
+        Route::get('/cosechas', [App\Http\Controllers\Admin\CosechaAdminController::class, 'index'])->name('cosechas.index');
+        Route::get('/pedidos', [App\Http\Controllers\Admin\PedidoAdminController::class, 'index'])->name('pedidos.index');
+        Route::get('/productos', [App\Http\Controllers\Admin\ProductoAdminController::class, 'index'])->name('productos.index');
+        Route::get('/ventas', [App\Http\Controllers\Admin\VentaAdminController::class, 'index'])->name('ventas.index');
+    });
 });

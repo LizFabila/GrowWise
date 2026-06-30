@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('reportes', function (Blueprint $table) {
             if (!Schema::hasColumn('reportes', 'estado')) {
-                $table->string('estado')->default('Generado')->after('ruta');
+                $table->string('estado')->default('Generado'); // 👈 Le quitamos el ->after('ruta')
             }
         });
     }
