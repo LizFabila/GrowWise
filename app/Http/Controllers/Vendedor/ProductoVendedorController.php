@@ -33,7 +33,7 @@ class ProductoVendedorController extends Controller
     {
         $cultivos = Cultivo::where('activo', 1)->orderBy('nombre')->get();
         $cosechas = Cosecha::where('user_id', Auth::id())
-            ->with('cultivo')
+            ->with('siembra.cultivo') // 🚀 Trae la siembra Y su cultivo al mismo tiempo
             ->orderBy('fecha_cosecha', 'desc')
             ->get();
 
